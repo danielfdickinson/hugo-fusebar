@@ -1,0 +1,24 @@
+
+description = "fusebar is a Hugo Module"
+
+[module]
+
+[module.hugoVersion]
+  min = "0.65.3"
+  extended = false
+
+  [[module.mounts]]
+    source = "."
+    target = "assets/js/fusebar"
+
+  [[modules.imports]]
+    path = "github.com/cshoredaniel/plainfuse"
+
+  [[modules.imports.mounts]]
+    source = "."
+    target = "assets/js/plainfuse"
+
+[author]
+  name = "Daniel F. Dickinson"
+  homepage = "https://www.thecshore.com"
+  copyright = "© 2020 Daniel F. Dickinson"

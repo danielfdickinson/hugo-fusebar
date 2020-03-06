@@ -1,0 +1,27 @@
+# Filter node stuff
+node_modules/
+*.log
+
+yarn-*.log
+
+# Filter MacOS folder store
+.DS_Store
+
+# Filter IDE settings
+.idea/
+.vs/
+.vscode/
+
+# Only publish 1 type of lockfile
+package-lock.json
+
+# Filter test runner
+runner.js
+
+# Filter editor backup files
+*~
+\#*#
+*.swp
+
+# Filter temporary files
+work/
