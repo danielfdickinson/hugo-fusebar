@@ -33,3 +33,8 @@ fusebar can be installed using NPM
 $ npm install fusebar
 ```
 
+## Development Server
+
+While developing one can ``npm run server`` and browse to
+<http://localhost:8080/> to do local testing / debugging of
+the search code.
