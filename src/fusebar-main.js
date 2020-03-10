@@ -1,13 +1,13 @@
-/* global indexurl, Mark, PlainFuse */
+'use strict'
 
-// Based on code from https://gist.github.com/eddiewebb/735feb48f50f0ddd65ae5606a1cb41ae#gistcomment-2989041
-// Modified by Daniel F. Dickinson
+/* global indexurl, PlainFuse */
 
-var summaryInclude = 300
+var summaryInclude = 1000
 var fuseOptions = { // See plainfuse.js for details
   shouldSort: true,
   includeMatches: true,
-  includeAllMatches: true,
+  findAllMatches: true,
+  minMatchCharLength: 3,
   threshold: 0.3,  // default of 0.6 matches too much
   tokenize: true,
   keys: [{
@@ -40,11 +40,13 @@ function doSearch() { // eslint-disable-line no-unused-vars
   var searchQuery = document.search_form.s.value
   if (searchQuery) {
     if (document.getElementById('search-query')) {
+      document.getElementById('search-results').innerHTML = '<h2>Search Results</h2>'
+
       document.getElementById('search-results').style = 'display: block; visibility: visible;'
       executeSearch(searchQuery)
     }
   } else {
-    var para = document.createElement('P')
+    var para = document.createElement('p')
     para.innerText = 'Please enter a word or phrase above'
     if (document.getElementById('search-results')) {
       document.getElementById('search-results').appendChild(para)
@@ -59,7 +61,8 @@ function executeSearch(searchQuery) {
   request.open('GET', indexurl, true)
   request.onload = function () {
     if (request.status >= 200 && request.status < 400) {
-      var pages = JSON.parse(request.responseText)
+      var jsonprep = request.responseText.replace(/\n/mg, ' ')
+      var pages = JSON.parse(jsonprep)
       var fuse = new PlainFuse(pages, fuseOptions)
       var result = fuse.search(searchQuery)
       if (result.length > 0) {
@@ -79,80 +82,154 @@ function executeSearch(searchQuery) {
   request.send()
 }
 
-function populateResults(result, searchQuery) {
-  result.forEach(function (value, key) {
-    var content = value.item.content
-    var snippet = ''
-    var snippetHighlights = []
-    if (fuseOptions.tokenize) {
-      snippetHighlights.push(searchQuery)
-    } else {
-      value.matches.forEach(function (mvalue, matchKey) { // eslint-disable-line no-unused-vars
-        if (mvalue.key == 'tags' || mvalue.key == 'categories') {
-          snippetHighlights.push(mvalue.value)
-        } else if (mvalue.key == 'content') {
-          var start = mvalue.indices[0][0] - summaryInclude > 0 ? mvalue.indices[0][0] - summaryInclude : 0
-          var end = mvalue.indices[0][1] + summaryInclude < content.length ? mvalue.indices[0][1] + summaryInclude : content.length
-          snippet += content.substring(start, end)
-          snippetHighlights.push(mvalue.value.substring(mvalue.indices[0][0], mvalue.indices[0][1] - mvalue.indices[0][0] + 1))
-        }
-      })
+function createMark(value) {
+  var markel = document.createElement('mark')
+  var spanel = document.createElement('span')
+  spanel.setAttribute('class', 'mark')
+  spanel.innerHTML = value
+  markel.appendChild(spanel)
+
+  return markel
+}
+
+function markMatches(matches) {
+  var newResult = {}
+  matches.forEach(function (items, num) { // eslint-disable-line no-unused-vars
+    var newElement = document.createElement('div')
+
+    var prevIndexEnd = 0
+
+    items.indices.forEach(function (indexpair, indexnum) { // eslint-disable-line no-unused-vars
+      if (items.key == 'content' && items.value.length > summaryInclude) {
+        items.value = items.value.substring(0, summaryInclude)
+      }
+
+      var matchString = items.value.substring(indexpair[0], indexpair[1] + 1)
+      if (indexpair[0] >= prevIndexEnd) {
+        var newSubString = document.createElement('span')
+        newSubString.innerHTML = items.value.substring(prevIndexEnd, indexpair[0])
+        newElement.appendChild(newSubString)
+      }
+
+      newElement.appendChild(createMark(matchString))
+
+      prevIndexEnd = indexpair[1] + 1
+    })
+
+    if ((prevIndexEnd) < items.value.length) {
+      newElement.appendChild(
+        document.createTextNode(
+          items.value.substring(prevIndexEnd, items.value.length)
+        )
+      )
     }
 
-    if (snippet.length < 1) {
-      snippet += content.substring(0, summaryInclude * 2)
+    newResult[items.key] = {
+      'element': newElement,
+      'original_value': items.value
     }
-    var templateDefinition = '<div id=\'summary-${key}\'><h4><a href=\'${link}\'>${title}</a></h4><p>${snippet}</p>${ isset tags }<p>Tags: ${tags}</p>${ end }\n${ isset categories }<p>Categories: ${categories}</p>${ end }</div>'
-    //replace values
-    var output = render(templateDefinition, {
-      key: key,
-      title: value.item.title,
-      link: value.item.permalink,
-      tags: value.item.tags ? value.item.tags.join(', ') : '',
-      categories: value.item.categories ? value.item.categories.join(', ') : '',
-      snippet: snippet
-    })
-    document.getElementById('search-results').appendChild(htmlToElement(output))
-
-    snippetHighlights.forEach(function (snipvalue, snipkey) {  // eslint-disable-line no-unused-vars
-      new Mark(document.getElementById('summary-' + key)).mark(snipvalue)
-    })
   })
+
+  return newResult
 }
 
-function render(templateString, data) {
-  var conditionalMatches, conditionalPattern, copy
-  conditionalPattern = /\$\{\s*isset ([a-zA-Z]*) \s*\}(.*)\$\{\s*end\s*}/g
-  //since loop below depends on re.lastIndex, we use a copy to capture any manipulations whilst inside the loop
-  copy = templateString
-  while ((conditionalMatches = conditionalPattern.exec(templateString)) !== null) {
-    if (data[conditionalMatches[1]]) {
-      //valid key, remove conditionals, leave content.
-      copy = copy.replace(conditionalMatches[0], conditionalMatches[2])
-    } else {
-      //not valid, remove entire section
-      copy = copy.replace(conditionalMatches[0], '')
+function populateResults(results, searchQuery) {
+  results.forEach(function (result, resnum) { // eslint-disable-line no-unused-vars
+    var resultElement = document.createElement('div')
+    resultElement.setAttribute('class', 'search-result')
+    resultElement.id = 'search-result-' + resnum.toString()
+    if (result.item.content && result.item.content.length > summaryInclude) {
+      result.item.content = result.item.content.substring(0, summaryInclude)
     }
-  }
-  templateString = copy
-  //now any conditionals removed we can do simple substitution
-  var key, find, re
-  for (key in data) {
-    find = '\\$\\{\\s*' + key + '\\s*\\}'
-    re = new RegExp(find, 'g')
-    templateString = templateString.replace(re, data[key])
-  }
-  return templateString
+    var resultMap = markMatches(result.matches)
+    var resultKeys = ['Title', 'Content', 'Tags', 'Categories']
+    resultKeys.forEach(function (key) {
+
+      var lowerKey = key.toString().toLowerCase()
+      var keyElement
+      var resultTitleLink
+
+      if (lowerKey == 'title') {
+        keyElement = document.createElement('h4')
+        keyElement.setAttribute('class', 'search-result-title')
+        var resultTitleLink = document.createElement('a')
+        resultTitleLink.setAttribute('href', result.item.permalink)
+      }
+
+      if (typeof resultMap[lowerKey] !== 'undefined') {
+        if (lowerKey == 'title') {
+          resultTitleLink.innerHTML = resultMap[lowerKey].element.innerHTML
+          if (!resultMap[lowerKey].element.innerHTML || resultMap[lowerKey].element.innerHTML == '') {
+            resultTitleLink.innnerHTML = 'Untitled'
+          }
+        } else if (lowerKey == 'content') {
+          keyElement = resultMap.content.element
+          keyElement.setAttribute('class', 'search-result-content')
+        } else {
+          var keyElVal
+          keyElement = document.createElement('div')
+          keyElement.setAttribute('class', 'search-result-' + lowerKey)
+          keyElement.appendChild(document.createTextNode(key + ":  "))
+          var firstVal = true
+          result.item[lowerKey].forEach(function (tcval, tckey) {
+            if (!firstVal) {
+              keyElement.appendChild(document.createTextNode(', '))
+            } else {
+              firstVal = false
+            }
+            if (tcval == resultMap[lowerKey].original_value) {
+              keyElVal = document.createElement('span')
+              keyElVal.innerHTML = resultMap[lowerKey].element.innerHTML
+
+            } else {
+              keyElVal = document.createElement('span')
+              keyElVal.innerHTML = tcval
+            }
+
+            keyElement.appendChild(keyElVal)
+          })
+        }
+      } else {
+        if (lowerKey == 'title') {
+          resultTitleLink.innerHTML = result.item.title
+          if (!result.item.title || result.item.title == '') {
+            resultTitleLink.innerHTML = 'Untitled'
+          }
+        } else if (lowerKey == 'content') {
+          if (result.item.content && (result.item.content != '')) {
+            keyElement = document.createElement('div')
+            keyElement.innerHTML = result.item.content
+          }
+        } else if (result.item[lowerKey]) {
+          keyElement = document.createElement('div')
+          keyElement.setAttribute('class', 'search-result-' + lowerKey)
+          keyElement.appendChild(document.createTextNode(key + ":  "))
+          var firstVal = true
+          result.item[lowerKey].forEach(function (tcval, tckey) {
+            if (!firstVal) {
+              keyElement.appendChild(document.createTextNode(', '))
+            } else {
+              firstVal = false
+            }
+            var keyElVal = document.createElement('span')
+            keyElVal.innerHTML = tcval
+            keyElement.appendChild(keyElVal)
+          })
+        }
+      }
+
+      if (lowerKey == 'title') {
+        keyElement.appendChild(resultTitleLink)
+      }
+
+      if (typeof keyElement !== 'undefined') {
+        resultElement.appendChild(keyElement)
+      }
+    })
+
+    document.getElementById('search-results').appendChild(resultElement)
+  })
+
+  return true
 }
 
-/**
- * By Mark Amery: https://stackoverflow.com/a/35385518
- * @param {String} HTML representing a single element
- * @return {Element}
- */
-function htmlToElement(html) {
-  var template = document.createElement('template')
-  html = html.trim() // Never return a text node of whitespace as the result
-  template.innerHTML = html
-  return template.content.firstChild
-}
