@@ -1,4 +1,4 @@
-   fusebar - Dynamic search screen using plainfuse as backend
+   fusebar - Private website search for browsers using Fuse.js as backend
    Copyright 2020 Daniel F. Dickinson <cshored@thecshore.com>
 
    Licensed under the Apache License, Version 2.0 (the "License");
