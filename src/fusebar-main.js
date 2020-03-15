@@ -1,30 +1,28 @@
-'use strict'
-
-/* global indexurl, PlainFuse */
+/* global indexurl Fuse */
 
 var summaryInclude = 1000
-var fuseOptions = { // See plainfuse.js for details
+var fuseOptions = { // See Fuse.js for details
+  findAllMatches: true,
   shouldSort: true,
   includeMatches: true,
-  findAllMatches: true,
-  minMatchCharLength: 3,
+  minMatchCharLength: 1,
   threshold: 0.3,  // default of 0.6 matches too much
-  tokenize: true,
+  tokenize: false,
   keys: [{
     name: 'title',
-    weight: 0.5
+    weight: 0.3
   },
   {
     name: 'content',
-    weight: 0.8
+    weight: 0.4
   },
   {
     name: 'tags',
-    weight: 0.4
+    weight: 0.1
   },
   {
     name: 'categories',
-    weight: 0.4
+    weight: 0.1
   }
   ]
 }
@@ -43,7 +41,9 @@ function doSearch() { // eslint-disable-line no-unused-vars
       document.getElementById('search-results').innerHTML = '<h2>Search Results</h2>'
 
       document.getElementById('search-results').style = 'display: block; visibility: visible;'
-      executeSearch(searchQuery)
+      var searchFuseOptions = fuseOptions
+      searchFuseOptions.minMatchCharLength = searchQuery.length * 0.8
+      executeSearch(searchQuery, searchFuseOptions)
     }
   } else {
     var para = document.createElement('p')
@@ -56,28 +56,36 @@ function doSearch() { // eslint-disable-line no-unused-vars
   return false
 }
 
-function executeSearch(searchQuery) {
+function executeSearch(searchQuery, searchFuseOptions, rescb) {
   var request = new XMLHttpRequest()
   request.open('GET', indexurl, true)
   request.onload = function () {
     if (request.status >= 200 && request.status < 400) {
       var jsonprep = request.responseText.replace(/\n/mg, ' ')
       var pages = JSON.parse(jsonprep)
-      var fuse = new PlainFuse(pages, fuseOptions)
+      var fuse = new Fuse(pages, searchFuseOptions)
       var result = fuse.search(searchQuery)
       if (result.length > 0) {
-        populateResults(result, searchQuery)
+        if (typeof rescb === 'function') {
+          rescb(result, searchQuery)
+        } else {
+          populateResults(result, searchQuery)
+        }
       } else {
-        var para = document.createElement('p')
-        para.innerText = 'No matches found'
-        document.getElementById('search-results').appendChild(para)
+        if (typeof rescb === 'function') {
+          rescb([], searchQuery)
+        } else {
+          var para = document.createElement('p')
+          para.innerText = 'No matches found'
+          document.getElementById('search-results').appendChild(para)
+        }
       }
     } else {
-      console.log('OldNewMashup had error ' + request.status + ' on ' + indexurl)
+      console.log('fusebar had error ' + request.status + ' on ' + indexurl)
     }
   }
   request.onerror = function () {
-    console.log('OldNewMashup search connection error ' + request.status)
+    console.log('fusebar search connection error ' + request.status)
   }
   request.send()
 }
@@ -133,7 +141,7 @@ function markMatches(matches) {
   return newResult
 }
 
-function populateResults(results, searchQuery) {
+function populateResults(results, searchQuery) { // eslint-disable-line no-unused-vars
   results.forEach(function (result, resnum) { // eslint-disable-line no-unused-vars
     var resultElement = document.createElement('div')
     resultElement.setAttribute('class', 'search-result')
@@ -152,7 +160,7 @@ function populateResults(results, searchQuery) {
       if (lowerKey == 'title') {
         keyElement = document.createElement('h4')
         keyElement.setAttribute('class', 'search-result-title')
-        var resultTitleLink = document.createElement('a')
+        resultTitleLink = document.createElement('a')
         resultTitleLink.setAttribute('href', result.item.permalink)
       }
 
@@ -169,9 +177,9 @@ function populateResults(results, searchQuery) {
           var keyElVal
           keyElement = document.createElement('div')
           keyElement.setAttribute('class', 'search-result-' + lowerKey)
-          keyElement.appendChild(document.createTextNode(key + ":  "))
+          keyElement.appendChild(document.createTextNode(key + ':  '))
           var firstVal = true
-          result.item[lowerKey].forEach(function (tcval, tckey) {
+          result.item[lowerKey].forEach(function (tcval, tckey) { // eslint-disable-line no-unused-vars
             if (!firstVal) {
               keyElement.appendChild(document.createTextNode(', '))
             } else {
@@ -203,9 +211,9 @@ function populateResults(results, searchQuery) {
         } else if (result.item[lowerKey]) {
           keyElement = document.createElement('div')
           keyElement.setAttribute('class', 'search-result-' + lowerKey)
-          keyElement.appendChild(document.createTextNode(key + ":  "))
-          var firstVal = true
-          result.item[lowerKey].forEach(function (tcval, tckey) {
+          keyElement.appendChild(document.createTextNode(key + ':  '))
+          firstVal = true
+          result.item[lowerKey].forEach(function (tcval, tckey) { // eslint-disable-line no-unused-vars
             if (!firstVal) {
               keyElement.appendChild(document.createTextNode(', '))
             } else {
