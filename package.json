@@ -5,8 +5,8 @@
     "email": "cshored@thecshore.com",
     "url": "https://www.thecshore.com"
   },
-  "version": "1.0.0",
-  "description": "Dynamic search screen using PlainFuse as backend",
+  "version": "1.1.1",
+  "description": "Private website search for browsers using Fuse.js as backend",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -17,29 +17,35 @@
     "fuzzy",
     "bitap",
     "search",
-    "standalone"
+    "browser",
+    "website",
+    "private"
   ],
   "main": "dist/fusebar.js",
   "scripts": {
     "clean": "rimraf ./dist ./work",
     "pretest": "npm run testbuild",
-    "test": "jest",
-    "prebuild": "npm run clean; npm run makedirs; npm run lint",
+    "test": "concurrently -s first -k \"npm run testserver\" jest",
+    "premkdirs": "npm run clean",
+    "prelint": "npm run mkdirs",
+    "prebuild": "npm run lint",
     "pretestbuild": "npm run build",
     "lint": "eslint --max-warnings 0 src",
-    "buildfusebar": "concat -o ./dist/fusebar.js ./node_modules/plainfuse/dist/plainfuse.js ./src/fusebar-main.js",
-    "testbuild": "concat -o ./work/fusebar.test.js ./dist/fusebar.js ./test/fusebar.test.js",
-    "build": "npm run buildfusebar",
-    "makedirs": "mkdir -p ./work ./dist",
-    "preserver": "npm run build",
-    "server": "http-server ."
+    "build": "concat -o ./dist/fusebar.js ./src/fusebar-main.js",
+    "testbuild": "concat -o ./work/fusebar.test.js ./_vendor/github.com/cshoredaniel/krisk-Fuse/dist/fuse.js ./test/prepare-fuse.js ./dist/fusebar.js ./test/fusebar.test.js",
+    "mkdirs": "mkdir -p ./work ./dist",
+    "server": "browser-sync start --config bs-config.js",
+    "testserver": "http-server --port 9000 --cors test/fixtures"
   },
   "devDependencies": {
+    "browser-sync": "^2.26.7",
     "concat": "^1.0.3",
+    "concurrently": "^5.1.0",
     "eslint": "^6.8.0",
     "handlebars": "^4.3.0",
     "http-server": "^0.12.1",
     "jest": "^24.3.1",
+    "jsdom": "^16.2.1",
     "mixin-deep": "^1.3.2",
     "rimraf": "^2.6.3",
     "set-value": "^2.0.1"

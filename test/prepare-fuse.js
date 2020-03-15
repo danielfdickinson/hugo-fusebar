@@ -1,0 +1,2 @@
+var Fuse = module.exports
+
