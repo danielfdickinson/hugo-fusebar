@@ -1,20 +1,12 @@
 
-description = "fusebar is a Hugo Module"
+description = "krisk-Fuse is a Hugo Module"
 
 [module]
 
 [module.hugoVersion]
   min = "0.65.3"
-  extended = false
 
   [[module.mounts]]
-    source = "."
-    target = "assets/js/fusebar"
-
-  [[module.imports]]
-    path = "github.com/cshoredaniel/krisk-Fuse"
-
-  [[module.imports.mounts]]
     source = "."
     target = "assets/js/krisk-Fuse"
 
