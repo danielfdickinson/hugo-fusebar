@@ -1,6 +1,8 @@
 
 # Introduction
 
+Version 0.2.0
+
 fusebar is a private website search for browsers using Fuse.js
 (from krisk/Fuse on GitHub) in the backend. It's only runtime dependency
 is Fuse.js (and search data).
@@ -8,7 +10,7 @@ is Fuse.js (and search data).
 ## Build Status
 
 See [fusebar
-STATUS](https://github.com/cshoredaniel/fusebar/blob/devel-1.0.0/STATUS.md)
+STATUS](https://github.com/cshoredaniel/fusebar/blob/master/STATUS.md)
 for the current build status.
 
 ## Installation
