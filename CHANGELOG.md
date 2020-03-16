@@ -13,6 +13,9 @@
 - Tweak default search settings
 - Use webpack and babel instead of writing in ES5 and only using
   concat.
+- Improve 'dev' task
+  - concurrently use browser-sync and webpack with watch
+  - since we're using webpack watch, use dist not src in browser
 
 ## Version 0.1.2
 - Fix Hugo module configuration.
