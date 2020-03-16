@@ -16,6 +16,7 @@
 - Improve 'dev' task
   - concurrently use browser-sync and webpack with watch
   - since we're using webpack watch, use dist not src in browser
+- Lint and fix lint errors for 'test' JS
 
 ## Version 0.1.2
 - Fix Hugo module configuration.

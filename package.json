@@ -29,7 +29,7 @@
     "prelint": "npm run clean",
     "prebuild": "npm run lint",
     "predev": "npm run prebuild",
-    "lint": "eslint --max-warnings 0 src",
+    "lint": "eslint --max-warnings 0 src test",
     "build": "webpack",
     "dev": "concurrently -k \"webpack --progress --colors --watch\" \"browser-sync start --config bs-config.js\""
   },

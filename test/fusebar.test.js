@@ -1,11 +1,10 @@
-/* global Fuse expect test beforeEach describe it executeSearch jest */
+/* global expect test describe jest require global */
 
 // Modified by Daniel F. Dickinson <cshored@thecshore.com>
 
 // Requires vendored dist/fuse
 // Requires fixtures/index.json
 
-const Fuse = require('./prepare-fuse.js').Fuse
 const executeSearch = require('./prepare-fuse.js').executeSearch
 
 var documentBody = '<h1>Fusebar Search Test</h1>' +
@@ -750,7 +749,7 @@ const mockXHRsend = jest.fn().mockImplementation(function () {
   whendone()
 })
 
-const mockXHRopen = jest.fn().mockImplementation(function (method, uri, async) {
+const mockXHRopen = jest.fn().mockImplementation(function (method, uri, async) { // eslint-disable-line no-unused-vars
   return
 })
 
@@ -763,7 +762,7 @@ XMLHttpRequestObj = {
   responseText: JSON.stringify(jsonData)
 }
 
-const XMLHttpRequest = jest.fn().mockImplementation(function () {
+const XMLHttpRequest = jest.fn().mockImplementation(function () { // eslint-disable-line no-redeclare
   return XMLHttpRequestObj
 })
 
@@ -800,8 +799,6 @@ let fuseOptions = { // See Fuse.js for details
 }
 
 describe('When searching website search contents', function() {
-  var result
-
   test('Searching for \'lorem ipsum dolor sit amet\' should populate search-results', function(done) {
     whendone = done
     fuseOptions.minMatchCharLength =  (0.8 * ('lorem ipsum dolor sit amet'.length))
