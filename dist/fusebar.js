@@ -1,1108 +1,2536 @@
-'use strict'
+(function webpackUniversalModuleDefinition(root, factory) {
+	if(typeof exports === 'object' && typeof module === 'object')
+		module.exports = factory();
+	else if(typeof define === 'function' && define.amd)
+		define("fusebar", [], factory);
+	else if(typeof exports === 'object')
+		exports["fusebar"] = factory();
+	else
+		root["fusebar"] = factory();
+})(this, function() {
+return /******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+/******/
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId]) {
+/******/ 			return installedModules[moduleId].exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			i: moduleId,
+/******/ 			l: false,
+/******/ 			exports: {}
+/******/ 		};
+/******/
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/
+/******/ 		// Flag the module as loaded
+/******/ 		module.l = true;
+/******/
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/
+/******/
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+/******/
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+/******/
+/******/ 	// define getter function for harmony exports
+/******/ 	__webpack_require__.d = function(exports, name, getter) {
+/******/ 		if(!__webpack_require__.o(exports, name)) {
+/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
+/******/ 		}
+/******/ 	};
+/******/
+/******/ 	// define __esModule on exports
+/******/ 	__webpack_require__.r = function(exports) {
+/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 		}
+/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 	};
+/******/
+/******/ 	// create a fake namespace object
+/******/ 	// mode & 1: value is a module id, require it
+/******/ 	// mode & 2: merge all properties of value into the ns
+/******/ 	// mode & 4: return value when already ns object
+/******/ 	// mode & 8|1: behave like require
+/******/ 	__webpack_require__.t = function(value, mode) {
+/******/ 		if(mode & 1) value = __webpack_require__(value);
+/******/ 		if(mode & 8) return value;
+/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
+/******/ 		var ns = Object.create(null);
+/******/ 		__webpack_require__.r(ns);
+/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
+/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
+/******/ 		return ns;
+/******/ 	};
+/******/
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = function(module) {
+/******/ 		var getter = module && module.__esModule ?
+/******/ 			function getDefault() { return module['default']; } :
+/******/ 			function getModuleExports() { return module; };
+/******/ 		__webpack_require__.d(getter, 'a', getter);
+/******/ 		return getter;
+/******/ 	};
+/******/
+/******/ 	// Object.prototype.hasOwnProperty.call
+/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
+/******/
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+/******/
+/******/
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(__webpack_require__.s = 0);
+/******/ })
+/************************************************************************/
+/******/ ([
+/* 0 */
+/***/ (function(module, exports, __webpack_require__) {
 
-var PLAINFUSE_LOGGER_LEVEL_NONE = 0
-var PLAINFUSE_LOGGER_LEVEL_LOW = 1   // eslint-disable-line no-unused-vars
-var PLAINFUSE_LOGGER_LEVEL_MED = 5
-var PLAINFUSE_LOGGER_LEVEL_HIGH = 10  // eslint-disable-line no-unused-vars
+/* global indexurl module require */
+var Fuse = __webpack_require__(1);
 
-function PlainFuseLogger(max_level) { // eslint-disable-line no-unused-vars
+var summaryInclude = 1000;
+var fuseOptions = {
+  // See Fuse.js for details
+  distance: 1000,
+  findAllMatches: true,
+  shouldSort: true,
+  includeMatches: true,
+  minMatchCharLength: 1,
+  threshold: 0.5,
+  // default of 0.6 matches too much
+  tokenize: false,
+  keys: [{
+    name: 'title',
+    weight: 0.3
+  }, {
+    name: 'content',
+    weight: 0.4
+  }, {
+    name: 'tags',
+    weight: 0.1
+  }, {
+    name: 'categories',
+    weight: 0.1
+  }]
+};
 
-  this.max_level = (typeof max_level !== 'undefined') ? max_level : PLAINFUSE_LOGGER_LEVEL_NONE
-
-  this.log = function(level, message) {
-    if (typeof message === 'undefined') {
-      message = level
-      level = PLAINFUSE_LOGGER_LEVEL_MED
-    }
-
-    if (this.max_level >= level) {
-      console.log(message)
-    }
-  }
-  
-  this.setLevel = function(level) {
-    this.max_level = (typeof level !== 'undefined') ? level : this.max_level
-  }
-}
-
-
-'use strict'
-
-// Modified by Daniel F. Dickinson <cshored@thecshore.com>
-
-function bitapScore(pattern, scoreOptions) { // eslint-disable-line no-unused-vars
-  var options = (typeof scoreOptions !== 'undefined') ? scoreOptions : {}
-  options.errors = (typeof options.errors !== 'undefined') ? options.errors : 0
-  options.currentLocation = (typeof options.currentLocation !== 'undefined') ? options.currentLocation : 0
-  options.expectedLocation = (typeof options.expectedLocation !== 'undefined') ? options.expectedLocation : 0
-  options.distance = (typeof options.distance !== 'undefined') ? options.distance : 100
-
-  var accuracy = options.errors / pattern.length
-  var proximity = Math.abs(options.expectedLocation - options.currentLocation)
-
-  if (!options.distance) {
-    // Dodge divide by zero error.
-    return proximity ? 1.0 : accuracy
-  }
-
-  return accuracy + (proximity / options.distance)
-}
-
-'use strict'
-
-// Modified by Daniel F. Dickinson <cshored@thecshore.com>
-
-function bitapMatchedIndices(matchmask, minMatchCharLength) { // eslint-disable-line no-unused-vars
-
-  matchmask = (typeof matchmask !== 'undefined') ? matchmask : []
-  minMatchCharLength = (typeof minMatchCharLength !== 'undefined') ? minMatchCharLength : 1
-  
-  var matchedIndices = []
-  var start = -1
-  var end = -1
-  var i = 0
-
-  for (var len = matchmask.length; i < len; i += 1) {
-    var match = matchmask[i]
-    if (match && start === -1) {
-      start = i
-    } else if (!match && start !== -1) {
-      end = i - 1
-      if ((end - start) + 1 >= minMatchCharLength) {
-        matchedIndices.push([start, end])
-      }
-      start = -1
-    }
-  }
-
-  // (i-1 - start) + 1 to i - start
-  if (matchmask[i - 1] && (i - start) >= minMatchCharLength) {
-    matchedIndices.push([start, i - 1])
-  }
-
-  return matchedIndices
-}
-
-'use strict'
-
-/* global bitapScore bitapMatchedIndices PLAINFUSE_LOGGER_LEVEL_NONE PLAINFUSE_LOGGER_LEVEL_HIGH PlainFuseLogger */
-// Modified by Daniel F. Dickinson
-
-// requires bitap_score
-// requires bitap_matched_indices
-
-function bitapSearch(text, pattern, patternAlphabet, searchOptions) { // eslint-disable-line no-unused-vars
-  var options = {}
-  if (typeof searchOptions === 'undefined') {
-    searchOptions = {}
-  }
-  options.location = (typeof searchOptions.location !== 'undefined') ? searchOptions.location : 0
-  options.distance = (typeof searchOptions.distance !== 'undefined') ? searchOptions.distance : 100
-  options.threshold = (typeof searchOptions.threshold !== 'undefined') ? searchOptions.threshold : 0.6
-  options.findAllMatches = (typeof searchOptions.findAllMatches !== 'undefined') ? searchOptions.findAllMatches : false
-  options.minMatchCharLength = (typeof searchOptions.minMatchCharLength !== 'undefined') ? searchOptions.minMatchCharLength : 1
-  options.verbose = (typeof searchOptions.verbose !== 'undefined') ? searchOptions.verbose : PLAINFUSE_LOGGER_LEVEL_NONE
-  
-  var logger = new PlainFuseLogger(options.verbose)
-
-  var expectedLocation = options.location
-  // Set starting location at beginning text and initialize the alphabet.
-  var textLen = text.length
-  // Highest score beyond which we give up.
-  var currentThreshold = options.threshold
-  // Is there a nearby exact match? (speedup)
-  var bestLocation = text.indexOf(pattern, expectedLocation)
-
-  var patternLen = pattern.length
-
-  // a mask of the matches
-  var matchMask = []
-  for (var i = 0; i < textLen; i += 1) {
-    matchMask[i] = 0
-  }
-
-  var score = 0
-
-  if (bestLocation !== -1) {
-    score = bitapScore(pattern, {
-      errors: 0,
-      currentLocation: bestLocation,
-      expectedLocation: expectedLocation,
-      distance: options.distance
-    })
-    currentThreshold = Math.min(score, currentThreshold)
-
-    // What about in the other direction? (speed up)
-    bestLocation = text.lastIndexOf(pattern, expectedLocation + patternLen)
-
-    if (bestLocation !== -1) {
-      score = bitapScore(pattern, {
-        errors: 0,
-        currentLocation: bestLocation,
-        expectedLocation: expectedLocation,
-        distance: options.distance
-      })
-      currentThreshold = Math.min(score, currentThreshold)
-    }
-  }
-
-  // Reset the best location
-  bestLocation = -1
-
-  var lastBitArr = []
-  var finalScore = 1
-  var binMax = patternLen + textLen
-
-  var mask = 1 << (patternLen - 1)
-
-  for (i = 0; i < patternLen; i += 1) {
-    // Scan for the best match; each iteration allows for one more error.
-    // Run a binary search to determine how far from the match location we can stray
-    // at this error level.
-    var binMin = 0
-    var binMid = binMax
-
-    while (binMin < binMid) {
-      score = bitapScore(pattern, {
-        errors: i,
-        currentLocation: expectedLocation + binMid,
-        expectedLocation: expectedLocation,
-        distance: options.distance
-      })
-
-      if (score <= currentThreshold) {
-        binMin = binMid
-      } else {
-        binMax = binMid
-      }
-
-      binMid = Math.floor((binMax - binMin) / 2 + binMin)
-    }
-
-    // Use the result from this iteration as the maximum for the next.
-    binMax = binMid
-
-    var start = Math.max(1, expectedLocation - binMid + 1)
-    var finish = options.findAllMatches ? textLen : Math.min(expectedLocation + binMid, textLen) + patternLen
-
-    // Initialize the bit array
-    var bitArr = Array(finish + 2)
-
-    bitArr[finish + 1] = (1 << i) - 1
-
-    for (var j = finish; j >= start; j -= 1) {
-      var currentLocation = j - 1
-      var charMatch = patternAlphabet[text.charAt(currentLocation)]
-
-      if (charMatch) {
-        matchMask[currentLocation] = 1
-      }
-
-      // First pass: exact match
-      bitArr[j] = ((bitArr[j + 1] << 1) | 1) & charMatch
-
-      // Subsequent passes: fuzzy match
-      if (i !== 0) {
-        bitArr[j] |= (((lastBitArr[j + 1] | lastBitArr[j]) << 1) | 1) | lastBitArr[j + 1]
-      }
-
-      if (bitArr[j] & mask) {
-        finalScore = bitapScore(pattern, {
-          errors: i,
-          currentLocation: currentLocation,
-          expectedLocation: expectedLocation,
-          distance: options.distance
-        })
-
-        // This match will almost certainly be better than any existing match.
-        // But check anyway.
-        if (finalScore <= currentThreshold) {
-          // Indeed it is
-          currentThreshold = finalScore
-          bestLocation = currentLocation
-
-          // Already passed `loc`, downhill from here on in.
-          if (bestLocation <= expectedLocation) {
-            break
-          }
-
-          // When passing `bestLocation`, don't exceed our current distance from `expectedLocation`.
-          start = Math.max(1, 2 * expectedLocation - bestLocation)
-        }
-      }
-    }
-
-    // No hope for a (better) match at greater error levels.
-    score = bitapScore(pattern, {
-      errors: i + 1,
-      currentLocation: expectedLocation,
-      expectedLocation: expectedLocation,
-      distance: options.distance
-    })
-
-    logger.log(PLAINFUSE_LOGGER_LEVEL_HIGH, 'score:' + score.toString() + ', finalScore: ' + finalScore.toString())
-
-    if (score > currentThreshold) {
-      break
-    }
-
-    lastBitArr = bitArr
-  }
-
-  logger.log(PLAINFUSE_LOGGER_LEVEL_HIGH, 'FINAL SCORE: ' + finalScore.toString())
-
-  // Count exact matches (those with a score of 0) to be "almost" exact
-  return {
-    isMatch: bestLocation >= 0,
-    score: finalScore === 0 ? 0.001 : finalScore,
-    matchedIndices: bitapMatchedIndices(matchMask, options.minMatchCharLength)
+function doCloseSearch() {
+  // eslint-disable-line no-unused-vars
+  if (document.getElementById('search-results')) {
+    document.getElementById('search-results').style = 'display: none; visibility: hidden;';
+    document.getElementById('search-results').innerHTML = '<h2>Search Results</h2>';
   }
 }
 
-'use strict'
+function doSearch() {
+  // eslint-disable-line no-unused-vars
+  var searchQuery = document.search_form.s.value;
 
-/* global PlainFuseLogger PLAINFUSE_LOGGER_LEVEL_NONE PLAINFUSE_LOGGER_LEVEL_HIGH */
-
-// Modified by Daniel F. Dickinson <cshored@thecshore.com>
-
-var BITAP_SPECIAL_CHARS_REGEX = /[-[\]{}()*+?.\\^$|]/g
-
-function bitapRegexSearch(text, pattern, tokenSeparator, verbose) { // eslint-disable-line no-unused-vars
-  tokenSeparator = (typeof tokenSeparator !== 'undefined') ? tokenSeparator : '/ +/g'
-  verbose = (typeof verbose !== 'undefined') ? verbose : PLAINFUSE_LOGGER_LEVEL_NONE
-  
-  var logger = new PlainFuseLogger(verbose)
-  
-  var regex = new RegExp(pattern.replace(BITAP_SPECIAL_CHARS_REGEX, '\\$&').replace(tokenSeparator, '|'))
-  var matches = text.match(regex)
-  var isMatch = !!matches
-  var matchedIndices = []
-  
-  logger.log(PLAINFUSE_LOGGER_LEVEL_HIGH, 'Regex: ' + JSON.stringify(regex))
-  logger.log(PLAINFUSE_LOGGER_LEVEL_HIGH, 'Regex matches: ' + JSON.stringify(matches))
-
-  if (isMatch) {
-    for (var i = 0, matchesLen = matches.length; i < matchesLen; i += 1) {
-      var match = matches[i]
-      matchedIndices.push([text.indexOf(match), match.length - 1])
+  if (searchQuery) {
+    if (document.getElementById('search-query')) {
+      document.getElementById('search-results').innerHTML = '<h2>Search Results</h2>';
+      document.getElementById('search-results').style = 'display: block; visibility: visible;';
+      var searchFuseOptions = fuseOptions;
+      searchFuseOptions.minMatchCharLength = searchQuery.length * 0.8;
+      executeSearch(searchQuery, searchFuseOptions);
     }
-  }
-
-  // TODO: revisit this score
-  var score =  isMatch ? 0.5 : 1
-  
-  return {
-    isMatch: isMatch,
-    score: score,
-    matchedIndices: matchedIndices
-  }
-}
-
-'use strict'
-
-// Modified by Daniel F. Dickinson <cshored@thecshore.com>
-
-function bitapPatternAlphabet(pattern) { // eslint-disable-line no-unused-vars
-  var mask = {}
-  var len = pattern.length
-
-  for (var i = 0; i < len; i += 1) {
-    mask[pattern.charAt(i)] = 0
-  }
-
-  for (var j = 0; j < len; j += 1) {
-    mask[pattern.charAt(j)] |= 1 << (len - j - 1)
-  }
-
-  return mask
-}
-
-'use strict'
-
-/* global bitapSearch bitapPatternAlphabet bitapRegexSearch PLAINFUSE_LOGGER_LEVEL_NONE PlainFuseLogger */
-/* Modified from upstream file src/bitap/index.js in upstream Fuse.js
- * Modification by Daniel F. Dickinson <cshored@thecshore.com>
- */
- 
-// Requires bitap_search
-// Requires bitap_pattern_alphabet
-// Requires bitap_regex_search
-
-// location: Approximately where in the text is the pattern expected to be found?
-// distance:
-//   Determines how close the match must be to the fuzzy location (specified above).
-//   An exact letter match which is 'distance' characters away from the fuzzy location
-//   would score as a complete mismatch. A distance of '0' requires the match be at
-//   the exact location specified, a threshold of '1000' would require a perfect match
-//   to be within 800 characters of the fuzzy location to be found using a 0.8 threshold.
-// threshold:
-//   At what point does the match algorithm give up. A threshold of '0.0' requires a perfect match
-//   (of both letters and location), a threshold of '1.0' would match anything.
-// maxPatternLength
-//   Machine word size
-// isCaseSensitive: Indicates whether comparisons should be case sensitive.
-// tokenSeparator: Regex used to separate words when searching. Only applicable when `tokenize` is `true`.
-// findallMatches:
-//   When true, the algorithm continues searching to the end of the input even if a perfect
-//   match is found before the end of the same input.
-// minMatchCharLength:
-//   Minimum number of characters that must be matched before a result is considered a match
-
-function Bitap(pattern, options) { // eslint-disable-line no-unused-vars
-
-  this.options = (typeof options !== 'undefined') ? options : {}
-
-  this.options.location = (typeof options.location !== 'undefined') ? options.location : 0
-  this.options.distance = (typeof options.distance !== 'undefined') ? options.distance : 100
-  this.options.threshold = (typeof options.threshold !== 'undefined') ? options.threshold : 0.6
-  this.options.maxPatternLength = (typeof options.maxPatternLength !== 'undefined') ? options.maxPatternLength : 32
-
-  this.options.isCaseSensitive = (typeof options.isCaseSensitive !== 'undefined') ? options.isCaseSensitive : false
-  this.options.tokenSeparator = (typeof options.tokenSeparator !== 'undefined') ? options.tokenSeparator : / +/g
-  this.options.findAllMatches = (typeof options.findAllMatches !== 'undefined') ? options.findAllMatches : false
-  this.options.minMatchCharLength = (typeof options.minMatchCharLength !== 'undefined') ? options.minMatchCharLength : 1
-  this.options.verbose = (typeof options.verbose !== 'undefined') ? options.verbose : PLAINFUSE_LOGGER_LEVEL_NONE
-  
-  this.logger = new PlainFuseLogger(this.options.verbose)
-
-  this.pattern = this.options.isCaseSensitive ? pattern : pattern.toLowerCase()
-
-  if (this.pattern.length <= this.options.maxPatternLength) {
-    this.patternAlphabet = bitapPatternAlphabet(this.pattern)
-  }
-
-  this.search = function(text) {
-    if (!this.options.isCaseSensitive) {
-      text = text.toLowerCase()
-    }
-
-    // Exact match
-    if (this.pattern === text) {
-      this.logger.log('Exact match')
-      return {
-        isMatch: true, 
-        score: 0, 
-        matchedIndices: [[0, text.length - 1]]
-      }
-    }
-
-    // When pattern length is greater than the machine word length, just do a a regex comparison
-    if (this.pattern.length > this.options.maxPatternLength) {
-      this.logger.log('Regex search due to pattern length: ' + this.pattern.length.toString())
-      return bitapRegexSearch(text, this.pattern, this.options.tokenSeparator, this.options.verbose)
-    }
-
-    // Otherwise, use Bitap algorithm
-    return bitapSearch(text, this.pattern, this.patternAlphabet, this.options)
-  }
-}
-
-// let x = new Bitap("od mn war", {})
-// let result = x.search("Old Man's War")
-// console.log(result)
-
-'use strict'
-
-/* global plainFuseIsArray */
-
-// Modified by Daniel F. Dickinson <cshored@thecshore.com>
-
-// Requires is_array
-
-function plainFuseDeepValue(obj, path, list) { // eslint-disable-line no-unused-vars
-  list = (typeof list !== 'undefined') ? list : []
-
-  if (!path) {
-    // If there's no path left, we've gotten to the object we care about.
-    list.push(obj)
   } else {
-    var dotIndex = path.indexOf('.')
-    var firstSegment = path
-    var remaining = null
+    var para = document.createElement('p');
+    para.innerText = 'Please enter a word or phrase above';
 
-    if (dotIndex !== -1) {
-      firstSegment = path.slice(0, dotIndex)
-      remaining = path.slice(dotIndex + 1)
-    }
-
-    var value = obj[firstSegment]
-
-    if (value !== null && value !== undefined) {
-      if (!remaining && (typeof value === 'string' || typeof value === 'number')) {
-        list.push(value.toString())
-      } else if (plainFuseIsArray(value)) {
-        // Search each item in the array.
-        for (var i = 0, len = value.length; i < len; i += 1) {
-          plainFuseDeepValue(value[i], remaining, list)
-        }
-      } else if (remaining) {
-        // An object. Recurse further.
-        plainFuseDeepValue(value, remaining, list)
-      }
+    if (document.getElementById('search-results')) {
+      document.getElementById('search-results').appendChild(para);
+      document.getElementById('search-results').style = 'display: block; visibility: visible;';
     }
   }
 
-  return list
+  return false;
 }
 
+function executeSearch(searchQuery, searchFuseOptions) {
+  var request = new XMLHttpRequest();
+  request.open('GET', indexurl, true);
 
-'use strict'
+  request.onload = function () {
+    if (request.status >= 200 && request.status < 400) {
+      var jsonprep = request.responseText.replace(/$/, ' ');
+      var pages = JSON.parse(jsonprep);
+      var fuse = new Fuse(pages, searchFuseOptions);
+      var result = fuse.search(searchQuery);
 
-// Modified by Daniel F. Dickinson <cshored@thecshore.com>
-
-function plainFuseIsArray(obj){ // eslint-disable-line no-unused-vars
-  return (!Array.isArray ? Object.prototype.toString.call(obj) === '[object Array]' : Array.isArray(obj))
-}
-
-'use strict'
-
-/* global plainFuseDeepValue Bitap plainFuseIsArray PLAINFUSE_LOGGER_LEVEL_NONE PLAINFUSE_LOGGER_LEVEL_LOW PLAINFUSE_LOGGER_LEVEL_MED PLAINFUSE_LOGGER_LEVEL_HIGH PlainFuseLogger */
-
-// Modified by Daniel F. Dickinson
-// from index.js in Fuse.js upstream
-
-// location: Approximately where in the text is the pattern expected to be found?
-// distance:
-//   Determines how close the match must be to the fuzzy location (specified above).
-//   An exact letter match which is 'distance' characters away from the fuzzy location
-//   would score as a complete mismatch. A distance of '0' requires the match be at
-//   the exact location specified, a threshold of '1000' would require a perfect match
-//   to be within 800 characters of the fuzzy location to be found using a 0.8 threshold.
-// threshold:
-//   At what point does the match algorithm give up. A threshold of '0.0' requires a perfect match
-//   (of both letters and location), a threshold of '1.0' would match anything.
-// maxPatternLength
-//   Machine word size
-// isCaseSense: Indicates whether comparisons should be case sensitive.
-// tokenSeparator: Regex used to separate words when searching. Only applicable when `tokenize` is `true`.
-// findallMatches:
-//   When true, the algorithm continues searching to the end of the input even if a perfect
-//   match is found before the end of the same input.
-// minMatchCharLength:
-//   Minimum number of characters that must be matched before a result is considered a match
-// id:
-//   Indicates whether comparisons should be case sensitive.
-//   of the items' dentifiers, otherwise it will be a list of the items.
-// keys: List of properties that will be searched. This also supports nested properties.
-// shouldSort: Whether to sort the result list, by score
-// getFn:
-//   The get function to use when fetching an object's properties.
-//   The default will search nested paths *ie foo.bar.baz*
-// sortFn: Default sort function
-// tokenize:
-//   When true, the search algorithm will search individual words **and** the full string,
-//   computing the final score as a function of both. Note that when `tokenize` is `true`,
-//   the `threshold`, `distance`, and `location` are inconsequential for individual tokens.
-// matchAllTokens:
-//   When true, the result set will only include records that match all tokens. Will only work
-//   if `tokenize` is also true.
-// verbose: Will print to the console. Useful for debugging.
-//         (A number between 0 (none) and 10 (maximum))
-//         (PLAINFUSE_LOGGER_LEVEL_XXX constants are available)
-function PlainFuse(list, options) { // eslint-disable-line no-unused-vars
-  this.options = (typeof options !== 'undefined') ? options : {}
-
-  this.options.location = (typeof options.location !== 'undefined') ? options.location : 0
-  this.options.distance = (typeof options.distance !== 'undefined') ? options.distance : 100
-  this.options.threshold = (typeof options.threshold !== 'undefined') ? options.threshold : 0.6
-  this.options.maxPatternLength = (typeof options.maxPatternLength !== 'undefined') ? options.maxPatternLength : 32
-
-  this.options.isCaseSensitive = (typeof options.isCaseSensitive !== 'undefined') ? options.isCaseSensitive : false
-  this.options.tokenSeparator = (typeof options.tokenSeparator !== 'undefined') ? options.tokenSeparator : / +/g
-  this.options.findAllMatches = (typeof options.findAllMatches !== 'undefined') ? options.findAllMatches : false
-  this.options.minMatchCharLength = (typeof options.minMatchCharLength !== 'undefined') ? options.minMatchCharLength : 1
-  this.options.id = (typeof options.id !== 'undefined') ? options.id : null
-  this.options.keys = (typeof options.keys !== 'undefined') ? options.keys : []
-  this.options.shouldSort = (typeof options.shouldSort !== 'undefined') ? options.shouldSort : true
-  this.options.getFn = (typeof options.getFn !== 'undefined') ? options.getFn : plainFuseDeepValue
-  this.options.sortFn = (typeof options.sortFn !== 'undefined') ? options.sortFn : function(a, b) { return (a.score - b.score) }
-  this.options.tokenize = (typeof options.tokenize !== 'undefined') ? options.tokenize : false
-  this.options.matchAllTokens = (typeof options.matchAllTokens !== 'undefined') ? options.matchAllTokens : false
-  this.options.includeMatches = (typeof options.includeMatches !== 'undefined') ? options.includeMatches : false
-  this.options.includeScore = (typeof options.includeScore !== 'undefined') ? options.includeScore : false
-  this.options.verbose = (typeof options.verbose !== 'undefined') ? options.verbose : PLAINFUSE_LOGGER_LEVEL_NONE
-
-  this.logger = new PlainFuseLogger(this.options.verbose)
-
-  this.setCollection = function(list) {
-    this.list = list
-    return list
-  }
-
-  this.setCollection(list)
-
-  this._log = function(level, message) {
-    this.logger.log(level, message)
-  }
-
-  this._prepare_searchers = function(pattern) {
-    pattern = (typeof pattern !== 'undefined') ? pattern: ''
-  
-    var tokenSearchers = []
-    var len = 0
-    var i = 0
-
-    if (this.options.tokenize) {
-      // Tokenize on the separator
-      var tokens = pattern.split(this.options.tokenSeparator)
-      this.logger.log('tokens: ' + JSON.stringify(tokens))
-      for (i = 0, len = tokens.length; i < len; i += 1) {
-        tokenSearchers.push(new Bitap(tokens[i], this.options))
-      }
-    }
-
-    var fullSearcher = new Bitap(pattern, this.options)
-
-    return {
-      tokenSearchers: tokenSearchers,
-      fullSearcher: fullSearcher
-    }
-  }
-
-  this._analyze = function(what, how) {
-    var key = what.key
-    var arrayIndex = typeof(what.arrayIndex) !== 'undefined' ? what.arrayIndex : -1
-    var value = what.value
-    var record = what.record
-    var index = what.index
-
-    var tokenSearchers = (typeof how.tokenSearchers !== 'undefined') ? how.tokenSearchers : []
-    var fullSearcher = how.fullSearcher
-    var resultMap = (typeof how.resultMap !== 'undefined') ? how.resultMap : {}
-    var results = (typeof how.results !== 'undefined') ? how.results : []
-  
-    // Check if the texvalue can be searched
-    if (value === 'undefined' || value === null) {
-      return
-    }
-
-    var exists = false
-    var averageScore = -1
-    var numTextMatches = 0
-
-    if (typeof value === 'string') {
-      if (key) {
-        this._log(PLAINFUSE_LOGGER_LEVEL_HIGH, 'Key: ' + key )
-      }
-
-      var mainSearchResult = fullSearcher.search(value)
-      this._log(PLAINFUSE_LOGGER_LEVEL_HIGH, 'Full text: "' + value + '", score: ' + mainSearchResult.score.toString())
-
-      if (this.options.tokenize) {
-        var words = value.split(this.options.tokenSeparator)
-        var scores = []
-
-        for (var i = 0; i < tokenSearchers.length; i += 1) {
-          var tokenSearcher = tokenSearchers[i]
-
-          this._log(PLAINFUSE_LOGGER_LEVEL_HIGH, 'Pattern: ' + tokenSearcher.pattern)
-
-          // let tokenScores = []
-          var hasMatchInText = false
-
-          for (var j = 0; j < words.length; j += 1) {
-            var word = words[j]
-            var tokenSearchResult = tokenSearcher.search(word)
-            var obj = {}
-            if (tokenSearchResult.isMatch) {
-              obj[word] = tokenSearchResult.score
-              exists = true
-              hasMatchInText = true
-              scores.push(tokenSearchResult.score)
-            } else {
-              obj[word] = 1
-              if (!this.options.matchAllTokens) {
-                scores.push(1)
-              }
-            }
-            this._log(PLAINFUSE_LOGGER_LEVEL_HIGH, 'Token: "' + word + '", score: ' + obj[word].toString() )
-            // tokenScores.push(obj)
-          }
-
-          if (hasMatchInText) {
-            numTextMatches += 1
-          }
-        }
-
-        averageScore = scores[0]
-        var scoresLen = scores.length
-        for (i = 1; i < scoresLen; i += 1) {
-          averageScore += scores[i]
-        }
-        averageScore = averageScore / scoresLen
-
-        this._log(PLAINFUSE_LOGGER_LEVEL_HIGH, 'Token score average:' + averageScore.toString())
-      }
-
-      var finalScore = mainSearchResult.score
-      if (averageScore > -1) {
-        finalScore = (finalScore + averageScore) / 2
-      }
-
-      this._log(PLAINFUSE_LOGGER_LEVEL_HIGH, 'Score average:' + finalScore.toString())
-
-      var checkTextMatches = (this.options.tokenize && this.options.matchAllTokens) ? numTextMatches >= tokenSearchers.length : true
-
-      this._log(PLAINFUSE_LOGGER_LEVEL_HIGH, 'Check Matches: ' + checkTextMatches.toString())
-
-      // If a match is found, add the item to <rawResults>, including its score
-      if ((exists || mainSearchResult.isMatch) && checkTextMatches) {
-        // Check if the item already exists in our results
-        var existingResult = resultMap[index]
-        if (existingResult) {
-          // Use the lowest score
-          // existingResult.score, bitapResult.score
-          existingResult.output.push({
-            key: key,
-            arrayIndex: arrayIndex,
-            value: value,
-            score: finalScore,
-            matchedIndices: mainSearchResult.matchedIndices
-          })
-        } else {
-          // Add it to the raw result list
-          resultMap[index] = {
-            item: record,
-            output: [{
-              key: key,
-              arrayIndex: arrayIndex,
-              value: value,
-              score: finalScore,
-              matchedIndices: mainSearchResult.matchedIndices
-            }]
-          }
-
-          results.push(resultMap[index])
-        }
-      }
-    } else if (plainFuseIsArray(value)) {
-      this.logger.log(PLAINFUSE_LOGGER_LEVEL_HIGH, 'Analyzing array: ' + JSON.stringify(value))
-      var len = 0
-      for (i = 0, len = value.length; i < len; i += 1) {
-        var analyzeResults = this._analyze({
-          key: key,
-          arrayIndex: i,
-          value: value[i],
-          record: record,
-          index: index
-        }, {
-          resultMap: resultMap,
-          results: results,
-          tokenSearchers: tokenSearchers,
-          fullSearcher: fullSearcher
-        })
-        
-        resultMap = analyzeResults.resultMap
-        results = analyzeResults.results
+      if (result.length > 0) {
+        populateResults(result, searchQuery);
+      } else {
+        var para = document.createElement('p');
+        para.innerHTML = 'No matches found';
+        document.getElementById('search-results').appendChild(para);
       }
     } else {
-      this.logger.log('Unknown value type for ' + JSON.stringify(value))
+      console.log('fusebar had error ' + request.status + ' on ' + indexurl);
     }
-    
-    return {
-      resultMap: resultMap,
-      results: results
+  };
+
+  request.onerror = function () {
+    console.log('fusebar search connection error ' + request.status);
+  };
+
+  request.send();
+}
+
+function createMark(value) {
+  var markel = document.createElement('mark');
+  var spanel = document.createElement('span');
+  spanel.setAttribute('class', 'mark');
+  spanel.innerHTML = value;
+  markel.appendChild(spanel);
+  return markel;
+}
+
+function markMatches(matches) {
+  var newResult = {};
+  matches.forEach(function (items, num) {
+    // eslint-disable-line no-unused-vars
+    var newElement = document.createElement('div');
+    var prevIndexEnd = 0;
+    items.indices.forEach(function (indexpair, indexnum) {
+      // eslint-disable-line no-unused-vars
+      if (items.key == 'content' && items.value.length > summaryInclude) {
+        items.value = items.value.substring(0, summaryInclude);
+      }
+
+      var matchString = items.value.substring(indexpair[0], indexpair[1] + 1);
+
+      if (indexpair[0] >= prevIndexEnd) {
+        var newSubString = document.createElement('span');
+        newSubString.innerHTML = items.value.substring(prevIndexEnd, indexpair[0]);
+        newElement.appendChild(newSubString);
+      }
+
+      newElement.appendChild(createMark(matchString));
+      prevIndexEnd = indexpair[1] + 1;
+    });
+
+    if (prevIndexEnd < items.value.length) {
+      newElement.appendChild(document.createTextNode(items.value.substring(prevIndexEnd, items.value.length)));
     }
-  }
 
-  this._computeScore = function(weights, results) {
-    this._log(PLAINFUSE_LOGGER_LEVEL_HIGH, 'Computing score:')
+    newResult[items.key] = {
+      'element': newElement,
+      'original_value': items.value
+    };
+  });
+  return newResult;
+}
 
-    for (var i = 0, len = results.length; i < len; i += 1) {
-      var output = results[i].output
-      var scoreLen = output.length
+function populateResults(results, searchQuery) {
+  // eslint-disable-line no-unused-vars
+  results.forEach(function (result, resnum) {
+    // eslint-disable-line no-unused-vars
+    var resultElement = document.createElement('div');
+    resultElement.setAttribute('class', 'search-result');
+    resultElement.id = 'search-result-' + resnum.toString();
 
-      var currScore = 1
-      var bestScore = 1
+    if (result.item.content && result.item.content.length > summaryInclude) {
+      result.item.content = result.item.content.substring(0, summaryInclude);
+    }
 
-      for (var j = 0; j < scoreLen; j += 1) {
-        var weight = weights ? weights[output[j].key].weight : 1
-        var score = weight === 1 ? output[j].score : (output[j].score || 0.001)
-        var nScore = score * weight
+    var resultMap = markMatches(result.matches);
+    var resultKeys = ['Title', 'Content', 'Tags', 'Categories'];
+    resultKeys.forEach(function (key) {
+      var lowerKey = key.toString().toLowerCase();
+      var keyElement;
+      var resultTitleLink;
 
-        if (weight !== 1) {
-          bestScore = Math.min(bestScore, nScore)
+      if (lowerKey == 'title') {
+        keyElement = document.createElement('h4');
+        keyElement.setAttribute('class', 'search-result-title');
+        resultTitleLink = document.createElement('a');
+        resultTitleLink.setAttribute('href', result.item.permalink);
+      }
+
+      if (typeof resultMap[lowerKey] !== 'undefined') {
+        if (lowerKey == 'title') {
+          resultTitleLink.innerHTML = resultMap[lowerKey].element.innerHTML;
+
+          if (!resultMap[lowerKey].element.innerHTML || resultMap[lowerKey].element.innerHTML == '') {
+            resultTitleLink.innnerHTML = 'Untitled';
+          }
+        } else if (lowerKey == 'content') {
+          keyElement = resultMap.content.element;
+          keyElement.setAttribute('class', 'search-result-content');
         } else {
-          output[j].nScore = nScore
-          currScore *= nScore
+          var keyElVal;
+          keyElement = document.createElement('div');
+          keyElement.setAttribute('class', 'search-result-' + lowerKey);
+          keyElement.appendChild(document.createTextNode(key + ':  '));
+          var firstVal = true;
+          result.item[lowerKey].forEach(function (tcval, tckey) {
+            // eslint-disable-line no-unused-vars
+            if (!firstVal) {
+              keyElement.appendChild(document.createTextNode(', '));
+            } else {
+              firstVal = false;
+            }
+
+            if (tcval == resultMap[lowerKey].original_value) {
+              keyElVal = document.createElement('span');
+              keyElVal.innerHTML = resultMap[lowerKey].element.innerHTML;
+            } else {
+              keyElVal = document.createElement('span');
+              keyElVal.innerHTML = tcval;
+            }
+
+            keyElement.appendChild(keyElVal);
+          });
+        }
+      } else {
+        if (lowerKey == 'title') {
+          resultTitleLink.innerHTML = result.item.title;
+
+          if (!result.item.title || result.item.title == '') {
+            resultTitleLink.innerHTML = 'Untitled';
+          }
+        } else if (lowerKey == 'content') {
+          if (result.item.content && result.item.content != '') {
+            keyElement = document.createElement('div');
+            keyElement.innerHTML = result.item.content;
+          }
+        } else if (result.item[lowerKey]) {
+          keyElement = document.createElement('div');
+          keyElement.setAttribute('class', 'search-result-' + lowerKey);
+          keyElement.appendChild(document.createTextNode(key + ':  '));
+          firstVal = true;
+          result.item[lowerKey].forEach(function (tcval, tckey) {
+            // eslint-disable-line no-unused-vars
+            if (!firstVal) {
+              keyElement.appendChild(document.createTextNode(', '));
+            } else {
+              firstVal = false;
+            }
+
+            var keyElVal = document.createElement('span');
+            keyElVal.innerHTML = tcval;
+            keyElement.appendChild(keyElVal);
+          });
         }
       }
 
-      results[i].score = bestScore === 1 ? currScore : bestScore
+      if (lowerKey == 'title') {
+        keyElement.appendChild(resultTitleLink);
+      }
 
-      this._log(PLAINFUSE_LOGGER_LEVEL_HIGH, i.toString() + ': "' + JSON.stringify(results[i]) + '"')
-    }
-  }
+      if (typeof keyElement !== 'undefined') {
+        resultElement.appendChild(keyElement);
+      }
+    });
+    document.getElementById('search-results').appendChild(resultElement);
+  });
+  return true;
+}
 
-  this._sort = function(results) {
-    this._log('Sorting....')
-    results.sort(this.options.sortFn)
-  }
+module.exports = {
+  doCloseSearch: doCloseSearch,
+  doSearch: doSearch,
+  executeSearch: executeSearch,
+  createMark: createMark,
+  markMatches: markMatches,
+  populateResults: populateResults
+};
 
-  this._format = function(results) {
-    results = (typeof results !== 'undefined') ? results : {}
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
 
-    var finalOutput = []
-    var transformers = []
-    var i, j, len, jtlen
+/* WEBPACK VAR INJECTION */(function(module) {var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;function _typeof2(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof2 = function _typeof2(obj) { return typeof obj; }; } else { _typeof2 = function _typeof2(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof2(obj); }
 
-    if (typeof results.length !== 'undefined') {
-      this._log('Formatting ' + results.length.toString() + ' results.')
-    }
+/*!
+ * Fuse.js v5.0.2-beta - Lightweight fuzzy-search (http://fusejs.io)
+ * 
+ * Copyright (c) 2012-2020 Kirollos Risk (http://kiro.me)
+ * All Rights Reserved. Apache Software License 2.0
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
+(function webpackUniversalModuleDefinition(root, factory) {
+  if (( false ? undefined : _typeof2(exports)) === 'object' && ( false ? undefined : _typeof2(module)) === 'object') module.exports = factory();else if (true) !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));else {}
+})(this, function () {
+  return (
+    /******/
+    function (modules) {
+      // webpackBootstrap
 
-    if (this.options.verbose >= PLAINFUSE_LOGGER_LEVEL_MED) {
-      var cache = []
-      this._log('formatting this: ' + JSON.stringify(results, function (key, value) {
-        if (typeof value === 'object' && value !== null) {
-          if (cache.indexOf(value) !== -1) {
-            // Circular reference found, discard key
-            return
-          }
-          // Store value in our collection
-          cache.push(value)
+      /******/
+      // The module cache
+
+      /******/
+      var installedModules = {};
+      /******/
+
+      /******/
+      // The require function
+
+      /******/
+
+      function __webpack_require__(moduleId) {
+        /******/
+
+        /******/
+        // Check if module is in cache
+
+        /******/
+        if (installedModules[moduleId]) {
+          /******/
+          return installedModules[moduleId].exports;
+          /******/
         }
-        return value
-      }))
-      cache = null
-    }
+        /******/
+        // Create a new module (and put it into the cache)
 
-    if (this.options.includeMatches) {
-      transformers.push(function(result, data) {
-        var l, tlen
+        /******/
 
-        var output = result.output
-        data.matches = []
 
-        for (l = 0, tlen = output.length; l < tlen; l += 1) {
-          var item = output[l]
+        var module = installedModules[moduleId] = {
+          /******/
+          i: moduleId,
 
-          if (item.matchedIndices.length === 0) {
-            continue
+          /******/
+          l: false,
+
+          /******/
+          exports: {}
+          /******/
+
+        };
+        /******/
+
+        /******/
+        // Execute the module function
+
+        /******/
+
+        modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+        /******/
+
+        /******/
+        // Flag the module as loaded
+
+        /******/
+
+        module.l = true;
+        /******/
+
+        /******/
+        // Return the exports of the module
+
+        /******/
+
+        return module.exports;
+        /******/
+      }
+      /******/
+
+      /******/
+
+      /******/
+      // expose the modules object (__webpack_modules__)
+
+      /******/
+
+
+      __webpack_require__.m = modules;
+      /******/
+
+      /******/
+      // expose the module cache
+
+      /******/
+
+      __webpack_require__.c = installedModules;
+      /******/
+
+      /******/
+      // define getter function for harmony exports
+
+      /******/
+
+      __webpack_require__.d = function (exports, name, getter) {
+        /******/
+        if (!__webpack_require__.o(exports, name)) {
+          /******/
+          Object.defineProperty(exports, name, {
+            enumerable: true,
+            get: getter
+          });
+          /******/
+        }
+        /******/
+
+      };
+      /******/
+
+      /******/
+      // define __esModule on exports
+
+      /******/
+
+
+      __webpack_require__.r = function (exports) {
+        /******/
+        if (typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+          /******/
+          Object.defineProperty(exports, Symbol.toStringTag, {
+            value: 'Module'
+          });
+          /******/
+        }
+        /******/
+
+
+        Object.defineProperty(exports, '__esModule', {
+          value: true
+        });
+        /******/
+      };
+      /******/
+
+      /******/
+      // create a fake namespace object
+
+      /******/
+      // mode & 1: value is a module id, require it
+
+      /******/
+      // mode & 2: merge all properties of value into the ns
+
+      /******/
+      // mode & 4: return value when already ns object
+
+      /******/
+      // mode & 8|1: behave like require
+
+      /******/
+
+
+      __webpack_require__.t = function (value, mode) {
+        /******/
+        if (mode & 1) value = __webpack_require__(value);
+        /******/
+
+        if (mode & 8) return value;
+        /******/
+
+        if (mode & 4 && _typeof2(value) === 'object' && value && value.__esModule) return value;
+        /******/
+
+        var ns = Object.create(null);
+        /******/
+
+        __webpack_require__.r(ns);
+        /******/
+
+
+        Object.defineProperty(ns, 'default', {
+          enumerable: true,
+          value: value
+        });
+        /******/
+
+        if (mode & 2 && typeof value != 'string') for (var key in value) {
+          __webpack_require__.d(ns, key, function (key) {
+            return value[key];
+          }.bind(null, key));
+        }
+        /******/
+
+        return ns;
+        /******/
+      };
+      /******/
+
+      /******/
+      // getDefaultExport function for compatibility with non-harmony modules
+
+      /******/
+
+
+      __webpack_require__.n = function (module) {
+        /******/
+        var getter = module && module.__esModule ?
+        /******/
+        function getDefault() {
+          return module['default'];
+        } :
+        /******/
+        function getModuleExports() {
+          return module;
+        };
+        /******/
+
+        __webpack_require__.d(getter, 'a', getter);
+        /******/
+
+
+        return getter;
+        /******/
+      };
+      /******/
+
+      /******/
+      // Object.prototype.hasOwnProperty.call
+
+      /******/
+
+
+      __webpack_require__.o = function (object, property) {
+        return Object.prototype.hasOwnProperty.call(object, property);
+      };
+      /******/
+
+      /******/
+      // __webpack_public_path__
+
+      /******/
+
+
+      __webpack_require__.p = "";
+      /******/
+
+      /******/
+
+      /******/
+      // Load entry module and return exports
+
+      /******/
+
+      return __webpack_require__(__webpack_require__.s = 0);
+      /******/
+    }(
+    /************************************************************************/
+
+    /******/
+    [
+    /* 0 */
+
+    /***/
+    function (module, exports, __webpack_require__) {
+      function ownKeys(object, enumerableOnly) {
+        var keys = Object.keys(object);
+
+        if (Object.getOwnPropertySymbols) {
+          var symbols = Object.getOwnPropertySymbols(object);
+          if (enumerableOnly) symbols = symbols.filter(function (sym) {
+            return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+          });
+          keys.push.apply(keys, symbols);
+        }
+
+        return keys;
+      }
+
+      function _objectSpread(target) {
+        for (var i = 1; i < arguments.length; i++) {
+          var source = arguments[i] != null ? arguments[i] : {};
+
+          if (i % 2) {
+            ownKeys(Object(source), true).forEach(function (key) {
+              _defineProperty(target, key, source[key]);
+            });
+          } else if (Object.getOwnPropertyDescriptors) {
+            Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
+          } else {
+            ownKeys(Object(source)).forEach(function (key) {
+              Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+            });
+          }
+        }
+
+        return target;
+      }
+
+      function _defineProperty(obj, key, value) {
+        if (key in obj) {
+          Object.defineProperty(obj, key, {
+            value: value,
+            enumerable: true,
+            configurable: true,
+            writable: true
+          });
+        } else {
+          obj[key] = value;
+        }
+
+        return obj;
+      }
+
+      function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+          throw new TypeError("Cannot call a class as a function");
+        }
+      }
+
+      function _defineProperties(target, props) {
+        for (var i = 0; i < props.length; i++) {
+          var descriptor = props[i];
+          descriptor.enumerable = descriptor.enumerable || false;
+          descriptor.configurable = true;
+          if ("value" in descriptor) descriptor.writable = true;
+          Object.defineProperty(target, descriptor.key, descriptor);
+        }
+      }
+
+      function _createClass(Constructor, protoProps, staticProps) {
+        if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+        if (staticProps) _defineProperties(Constructor, staticProps);
+        return Constructor;
+      }
+
+      var _require = __webpack_require__(1),
+          BitapSearch = _require.BitapSearch,
+          ExtendedSearch = _require.ExtendedSearch,
+          NGramSearch = _require.NGramSearch;
+
+      var _require2 = __webpack_require__(22),
+          isArray = _require2.isArray,
+          isDefined = _require2.isDefined,
+          isString = _require2.isString,
+          isNumber = _require2.isNumber,
+          isObject = _require2.isObject;
+
+      var get = __webpack_require__(23);
+
+      var _require3 = __webpack_require__(24),
+          createIndex = _require3.createIndex,
+          KeyStore = _require3.KeyStore;
+
+      var _require4 = __webpack_require__(27),
+          transformMatches = _require4.transformMatches,
+          transformScore = _require4.transformScore;
+
+      var _require5 = __webpack_require__(7),
+          MAX_BITS = _require5.MAX_BITS; // // Will print to the console. Useful for debugging.
+      // function debug() {
+      //   if (Fuse.verbose) {
+      //     console.log(...arguments)
+      //     // const util = require('util')
+      //     // console.log(util.inspect(...arguments, false, null, true /* enable colors */))
+      //   }
+      // }
+      // function debugTime(value) {
+      //   if (Fuse.verboseTime) {
+      //     console.time(value)
+      //   }
+      // }
+      // function debugTimeEnd(value) {
+      //   if (Fuse.verboseTime) {
+      //     console.timeEnd(value)
+      //   }
+      // }
+
+
+      var FuseOptions = {
+        // When true, the algorithm continues searching to the end of the input even if a perfect
+        // match is found before the end of the same input.
+        isCaseSensitive: false,
+        // Determines how close the match must be to the fuzzy location (specified above).
+        // An exact letter match which is 'distance' characters away from the fuzzy location
+        // would score as a complete mismatch. A distance of '0' requires the match be at
+        // the exact location specified, a threshold of '1000' would require a perfect match
+        // to be within 800 characters of the fuzzy location to be found using a 0.8 threshold.
+        distance: 100,
+        // Minimum number of characters that must be matched before a result is considered a match
+        findAllMatches: false,
+        // The get function to use when fetching an object's properties.
+        // The default will search nested paths *ie foo.bar.baz*
+        getFn: get,
+        includeMatches: false,
+        includeScore: false,
+        // List of properties that will be searched. This also supports nested properties.
+        keys: [],
+        // Approximately where in the text is the pattern expected to be found?
+        location: 0,
+        // Minimum number of characters that must be matched before a result is considered a match
+        minMatchCharLength: 1,
+        // Whether to sort the result list, by score
+        shouldSort: true,
+        // Default sort function
+        sortFn: function sortFn(a, b) {
+          return a.score - b.score;
+        },
+        // At what point does the match algorithm give up. A threshold of '0.0' requires a perfect match
+        // (of both letters and location), a threshold of '1.0' would match anything.
+        threshold: 0.6,
+        // Enabled extended-searching
+        useExtendedSearch: false
+      };
+
+      var Fuse = /*#__PURE__*/function () {
+        function Fuse(list) {
+          var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : FuseOptions;
+          var index = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+
+          _classCallCheck(this, Fuse);
+
+          this.options = _objectSpread({}, FuseOptions, {}, options); // `caseSensitive` is deprecated, use `isCaseSensitive` instead
+
+          this.options.isCaseSensitive = options.caseSensitive;
+          delete this.options.caseSensitive; // debugTime('Constructing')
+
+          this._processKeys(this.options.keys);
+
+          this.setCollection(list, index); // debugTimeEnd('Constructing')
+        }
+
+        _createClass(Fuse, [{
+          key: "setCollection",
+          value: function setCollection(list) {
+            var index = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+            this.list = list;
+            this.listIsStringArray = isString(list[0]);
+
+            if (index) {
+              this.setIndex(index);
+            } else {
+              // debugTime('Process index')
+              this.setIndex(this._createIndex()); // debugTimeEnd('Process index')
+            }
+          }
+        }, {
+          key: "setIndex",
+          value: function setIndex(listIndex) {
+            this._indexedList = listIndex; // debug(listIndex)
+          }
+        }, {
+          key: "_processKeys",
+          value: function _processKeys(keys) {
+            this._keyStore = new KeyStore(keys); // debug('Process Keys')
+
+            if (Fuse.verbose) {// debug(this._keyStore.toJSON())
+            }
+          }
+        }, {
+          key: "_createIndex",
+          value: function _createIndex() {
+            return createIndex(this._keyStore.keys(), this.list, {
+              getFn: this.options.getFn
+            });
+          }
+        }, {
+          key: "search",
+          value: function search(pattern) {
+            var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {
+              limit: false
+            }; // debug(`--------- Search pattern: "${pattern}"`)
+
+            var _this$options = this.options,
+                useExtendedSearch = _this$options.useExtendedSearch,
+                shouldSort = _this$options.shouldSort;
+            var searcher = null;
+
+            if (useExtendedSearch) {
+              searcher = new ExtendedSearch(pattern, this.options);
+            } else if (pattern.length > MAX_BITS) {
+              searcher = new NGramSearch(pattern, this.options);
+            } else {
+              searcher = new BitapSearch(pattern, this.options);
+            } // debugTime('Search time');
+
+
+            var results = this._searchUsing(searcher); // debugTimeEnd('Search time');
+            // debugTime('Compute score time');
+
+
+            this._computeScore(results); // debugTimeEnd('Compute score time');
+
+
+            if (shouldSort) {
+              this._sort(results);
+            }
+
+            if (opts.limit && isNumber(opts.limit)) {
+              results = results.slice(0, opts.limit);
+            }
+
+            return this._format(results);
+          }
+        }, {
+          key: "_searchUsing",
+          value: function _searchUsing(searcher) {
+            var list = this._indexedList;
+            var results = [];
+            var includeMatches = this.options.includeMatches; // List is Array<String>
+
+            if (this.listIsStringArray) {
+              // Iterate over every string in the list
+              for (var i = 0, len = list.length; i < len; i += 1) {
+                var value = list[i];
+                var text = value.$,
+                    idx = value.idx;
+
+                if (!isDefined(text)) {
+                  continue;
+                }
+
+                var searchResult = searcher.searchIn(value);
+                var isMatch = searchResult.isMatch,
+                    score = searchResult.score;
+
+                if (!isMatch) {
+                  continue;
+                }
+
+                var match = {
+                  score: score,
+                  value: text
+                };
+
+                if (includeMatches) {
+                  match.indices = searchResult.matchedIndices;
+                }
+
+                results.push({
+                  item: text,
+                  idx: idx,
+                  matches: [match]
+                });
+              }
+            } else {
+              // List is Array<Object>
+              var keyNames = this._keyStore.keys();
+
+              var keysLen = this._keyStore.count();
+
+              for (var _i = 0, _len = list.length; _i < _len; _i += 1) {
+                var _list$_i = list[_i],
+                    item = _list$_i.$,
+                    _idx = _list$_i.idx;
+
+                if (!isDefined(item)) {
+                  continue;
+                }
+
+                var matches = []; // Iterate over every key (i.e, path), and fetch the value at that key
+
+                for (var j = 0; j < keysLen; j += 1) {
+                  var key = keyNames[j];
+                  var _value = item[key]; // debug(` Key: ${key === '' ? '--' : key}`)
+
+                  if (!isDefined(_value)) {
+                    continue;
+                  }
+
+                  if (isArray(_value)) {
+                    for (var k = 0, _len2 = _value.length; k < _len2; k += 1) {
+                      var arrItem = _value[k];
+                      var _text = arrItem.$;
+                      var _idx2 = arrItem.idx;
+
+                      if (!isDefined(_text)) {
+                        continue;
+                      }
+
+                      var _searchResult = searcher.searchIn(arrItem);
+
+                      var _isMatch = _searchResult.isMatch,
+                          _score = _searchResult.score; // debug(`Full text: "${text}", score: ${score}`)
+
+                      if (!_isMatch) {
+                        continue;
+                      }
+
+                      var _match = {
+                        score: _score,
+                        key: key,
+                        value: _text,
+                        idx: _idx2
+                      };
+
+                      if (includeMatches) {
+                        _match.indices = _searchResult.matchedIndices;
+                      }
+
+                      matches.push(_match);
+                    }
+                  } else {
+                    var _text2 = _value.$;
+
+                    var _searchResult2 = searcher.searchIn(_value);
+
+                    var _isMatch2 = _searchResult2.isMatch,
+                        _score2 = _searchResult2.score; // debug(`Full text: "${text}", score: ${score}`)
+
+                    if (!_isMatch2) {
+                      continue;
+                    }
+
+                    var _match2 = {
+                      score: _score2,
+                      key: key,
+                      value: _text2
+                    };
+
+                    if (includeMatches) {
+                      _match2.indices = _searchResult2.matchedIndices;
+                    }
+
+                    matches.push(_match2);
+                  }
+                }
+
+                if (matches.length) {
+                  results.push({
+                    idx: _idx,
+                    item: item,
+                    matches: matches
+                  });
+                }
+              }
+            } // debug("--------- RESULTS -----------")
+            // debug(results)
+            // debug("-----------------------------")
+
+
+            return results;
+          }
+        }, {
+          key: "_computeScore",
+          value: function _computeScore(results) {
+            // debug('Computing score: ')
+            for (var i = 0, len = results.length; i < len; i += 1) {
+              var result = results[i];
+              var matches = result.matches;
+              var scoreLen = matches.length;
+              var totalWeightedScore = 1; // let bestScore = -1
+
+              for (var j = 0; j < scoreLen; j += 1) {
+                var item = matches[j];
+                var key = item.key;
+
+                var keyWeight = this._keyStore.get(key, 'weight');
+
+                var weight = keyWeight || 1;
+                var score = item.score === 0 && keyWeight && keyWeight > 0 ? Number.EPSILON : item.score;
+                totalWeightedScore *= Math.pow(score, weight); // Keep track of the best score.. just in case
+                // Actually, we're not really using it.. but need to think of a way to incorporate this
+                // bestScore = bestScore == -1 ? item.score : Math.min(bestScore, item.score)
+              }
+
+              result.score = totalWeightedScore; // result.$score = bestScore
+              // debug(result)
+            }
+          }
+        }, {
+          key: "_sort",
+          value: function _sort(results) {
+            // debug('Sorting....')
+            results.sort(this.options.sortFn);
+          }
+        }, {
+          key: "_format",
+          value: function _format(results) {
+            var finalOutput = [];
+            var _this$options2 = this.options,
+                includeMatches = _this$options2.includeMatches,
+                includeScore = _this$options2.includeScore; // if (Fuse.verbose) {
+            //   let cache = []
+            //   debug('Output:', JSON.stringify(results, (key, value) => {
+            //     if (isObject(value) && isDefined(value)) {
+            //       if (cache.indexOf(value) !== -1) {
+            //         // Circular reference found, discard key
+            //         return
+            //       }
+            //       // Store value in our collection
+            //       cache.push(value)
+            //     }
+            //     return value
+            //   }, 2))
+            //   cache = null
+            // }
+
+            var transformers = [];
+            if (includeMatches) transformers.push(transformMatches);
+            if (includeScore) transformers.push(transformScore); // debug("===== RESULTS ======")
+            // debug(results)
+            // debug("====================")
+
+            for (var i = 0, len = results.length; i < len; i += 1) {
+              var result = results[i]; // debug('result', result)
+
+              var idx = result.idx;
+              var data = {
+                item: this.list[idx],
+                refIndex: idx
+              };
+
+              if (transformers.length) {
+                for (var j = 0, _len3 = transformers.length; j < _len3; j += 1) {
+                  transformers[j](result, data);
+                }
+              }
+
+              finalOutput.push(data);
+            }
+
+            return finalOutput;
+          }
+        }]);
+
+        return Fuse;
+      }();
+
+      Fuse.createIndex = createIndex;
+      module.exports = Fuse;
+      /***/
+    },
+    /* 1 */
+
+    /***/
+    function (module, exports, __webpack_require__) {
+      module.exports = {
+        BitapSearch: __webpack_require__(2),
+        ExtendedSearch: __webpack_require__(8),
+        NGramSearch: __webpack_require__(15)
+      };
+      /***/
+    },
+    /* 2 */
+
+    /***/
+    function (module, exports, __webpack_require__) {
+      function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+          throw new TypeError("Cannot call a class as a function");
+        }
+      }
+
+      function _defineProperties(target, props) {
+        for (var i = 0; i < props.length; i++) {
+          var descriptor = props[i];
+          descriptor.enumerable = descriptor.enumerable || false;
+          descriptor.configurable = true;
+          if ("value" in descriptor) descriptor.writable = true;
+          Object.defineProperty(target, descriptor.key, descriptor);
+        }
+      }
+
+      function _createClass(Constructor, protoProps, staticProps) {
+        if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+        if (staticProps) _defineProperties(Constructor, staticProps);
+        return Constructor;
+      }
+
+      var bitapSearch = __webpack_require__(3);
+
+      var patternAlphabet = __webpack_require__(6);
+
+      var _require = __webpack_require__(7),
+          MAX_BITS = _require.MAX_BITS;
+
+      var BitapSearch = /*#__PURE__*/function () {
+        function BitapSearch(pattern, _ref) {
+          var _ref$location = _ref.location,
+              location = _ref$location === void 0 ? 0 : _ref$location,
+              _ref$distance = _ref.distance,
+              distance = _ref$distance === void 0 ? 100 : _ref$distance,
+              _ref$threshold = _ref.threshold,
+              threshold = _ref$threshold === void 0 ? 0.6 : _ref$threshold,
+              _ref$isCaseSensitive = _ref.isCaseSensitive,
+              isCaseSensitive = _ref$isCaseSensitive === void 0 ? false : _ref$isCaseSensitive,
+              _ref$findAllMatches = _ref.findAllMatches,
+              findAllMatches = _ref$findAllMatches === void 0 ? false : _ref$findAllMatches,
+              _ref$minMatchCharLeng = _ref.minMatchCharLength,
+              minMatchCharLength = _ref$minMatchCharLeng === void 0 ? 1 : _ref$minMatchCharLeng,
+              _ref$includeMatches = _ref.includeMatches,
+              includeMatches = _ref$includeMatches === void 0 ? false : _ref$includeMatches;
+
+          _classCallCheck(this, BitapSearch);
+
+          this.options = {
+            location: location,
+            distance: distance,
+            threshold: threshold,
+            isCaseSensitive: isCaseSensitive,
+            findAllMatches: findAllMatches,
+            includeMatches: includeMatches,
+            minMatchCharLength: minMatchCharLength
+          };
+
+          if (pattern.length > MAX_BITS) {
+            throw new Error("Pattern length exceeds max of ".concat(MAX_BITS, "."));
+          }
+
+          this.pattern = isCaseSensitive ? pattern : pattern.toLowerCase();
+          this.patternAlphabet = patternAlphabet(this.pattern);
+        }
+
+        _createClass(BitapSearch, [{
+          key: "searchIn",
+          value: function searchIn(value) {
+            var text = value.$;
+            var _this$options = this.options,
+                isCaseSensitive = _this$options.isCaseSensitive,
+                includeMatches = _this$options.includeMatches;
+
+            if (!isCaseSensitive) {
+              text = text.toLowerCase();
+            } // Exact match
+
+
+            if (this.pattern === text) {
+              var result = {
+                isMatch: true,
+                score: 0
+              };
+
+              if (includeMatches) {
+                result.matchedIndices = [[0, text.length - 1]];
+              }
+
+              return result;
+            } // Otherwise, use Bitap algorithm
+
+
+            var _this$options2 = this.options,
+                location = _this$options2.location,
+                distance = _this$options2.distance,
+                threshold = _this$options2.threshold,
+                findAllMatches = _this$options2.findAllMatches,
+                minMatchCharLength = _this$options2.minMatchCharLength;
+            return bitapSearch(text, this.pattern, this.patternAlphabet, {
+              location: location,
+              distance: distance,
+              threshold: threshold,
+              findAllMatches: findAllMatches,
+              minMatchCharLength: minMatchCharLength,
+              includeMatches: includeMatches
+            });
+          }
+        }]);
+
+        return BitapSearch;
+      }();
+
+      module.exports = BitapSearch;
+      /***/
+    },
+    /* 3 */
+
+    /***/
+    function (module, exports, __webpack_require__) {
+      var bitapScore = __webpack_require__(4);
+
+      var matchedIndices = __webpack_require__(5);
+
+      module.exports = function (text, pattern, patternAlphabet, _ref) {
+        var _ref$location = _ref.location,
+            location = _ref$location === void 0 ? 0 : _ref$location,
+            _ref$distance = _ref.distance,
+            distance = _ref$distance === void 0 ? 100 : _ref$distance,
+            _ref$threshold = _ref.threshold,
+            threshold = _ref$threshold === void 0 ? 0.6 : _ref$threshold,
+            _ref$findAllMatches = _ref.findAllMatches,
+            findAllMatches = _ref$findAllMatches === void 0 ? false : _ref$findAllMatches,
+            _ref$minMatchCharLeng = _ref.minMatchCharLength,
+            minMatchCharLength = _ref$minMatchCharLeng === void 0 ? 1 : _ref$minMatchCharLeng,
+            _ref$includeMatches = _ref.includeMatches,
+            includeMatches = _ref$includeMatches === void 0 ? false : _ref$includeMatches;
+        var patternLen = pattern.length; // Set starting location at beginning text and initialize the alphabet.
+
+        var textLen = text.length; // Handle the case when location > text.length
+
+        var expectedLocation = Math.max(0, Math.min(location, textLen)); // Highest score beyond which we give up.
+
+        var currentThreshold = threshold; // Is there a nearby exact match? (speedup)
+
+        var bestLocation = text.indexOf(pattern, expectedLocation); // a mask of the matches
+
+        var matchMask = [];
+
+        for (var i = 0; i < textLen; i += 1) {
+          matchMask[i] = 0;
+        }
+
+        if (bestLocation !== -1) {
+          var score = bitapScore(pattern, {
+            errors: 0,
+            currentLocation: bestLocation,
+            expectedLocation: expectedLocation,
+            distance: distance
+          });
+          currentThreshold = Math.min(score, currentThreshold); // What about in the other direction? (speed up)
+
+          bestLocation = text.lastIndexOf(pattern, expectedLocation + patternLen);
+
+          if (bestLocation !== -1) {
+            var _score = bitapScore(pattern, {
+              errors: 0,
+              currentLocation: bestLocation,
+              expectedLocation: expectedLocation,
+              distance: distance
+            });
+
+            currentThreshold = Math.min(_score, currentThreshold);
+          }
+        } // Reset the best location
+
+
+        bestLocation = -1;
+        var lastBitArr = [];
+        var finalScore = 1;
+        var binMax = patternLen + textLen;
+        var mask = 1 << (patternLen <= 31 ? patternLen - 1 : 30);
+
+        for (var _i = 0; _i < patternLen; _i += 1) {
+          // Scan for the best match; each iteration allows for one more error.
+          // Run a binary search to determine how far from the match location we can stray
+          // at this error level.
+          var binMin = 0;
+          var binMid = binMax;
+
+          while (binMin < binMid) {
+            var _score3 = bitapScore(pattern, {
+              errors: _i,
+              currentLocation: expectedLocation + binMid,
+              expectedLocation: expectedLocation,
+              distance: distance
+            });
+
+            if (_score3 <= currentThreshold) {
+              binMin = binMid;
+            } else {
+              binMax = binMid;
+            }
+
+            binMid = Math.floor((binMax - binMin) / 2 + binMin);
+          } // Use the result from this iteration as the maximum for the next.
+
+
+          binMax = binMid;
+          var start = Math.max(1, expectedLocation - binMid + 1);
+          var finish = findAllMatches ? textLen : Math.min(expectedLocation + binMid, textLen) + patternLen; // Initialize the bit array
+
+          var bitArr = Array(finish + 2);
+          bitArr[finish + 1] = (1 << _i) - 1;
+
+          for (var j = finish; j >= start; j -= 1) {
+            var currentLocation = j - 1;
+            var charMatch = patternAlphabet[text.charAt(currentLocation)];
+
+            if (charMatch) {
+              matchMask[currentLocation] = 1;
+            } // First pass: exact match
+
+
+            bitArr[j] = (bitArr[j + 1] << 1 | 1) & charMatch; // Subsequent passes: fuzzy match
+
+            if (_i !== 0) {
+              bitArr[j] |= (lastBitArr[j + 1] | lastBitArr[j]) << 1 | 1 | lastBitArr[j + 1];
+            }
+
+            if (bitArr[j] & mask) {
+              finalScore = bitapScore(pattern, {
+                errors: _i,
+                currentLocation: currentLocation,
+                expectedLocation: expectedLocation,
+                distance: distance
+              }); // This match will almost certainly be better than any existing match.
+              // But check anyway.
+
+              if (finalScore <= currentThreshold) {
+                // Indeed it is
+                currentThreshold = finalScore;
+                bestLocation = currentLocation; // Already passed `loc`, downhill from here on in.
+
+                if (bestLocation <= expectedLocation) {
+                  break;
+                } // When passing `bestLocation`, don't exceed our current distance from `expectedLocation`.
+
+
+                start = Math.max(1, 2 * expectedLocation - bestLocation);
+              }
+            }
+          } // No hope for a (better) match at greater error levels.
+
+
+          var _score2 = bitapScore(pattern, {
+            errors: _i + 1,
+            currentLocation: expectedLocation,
+            expectedLocation: expectedLocation,
+            distance: distance
+          });
+
+          if (_score2 > currentThreshold) {
+            break;
+          }
+
+          lastBitArr = bitArr;
+        }
+
+        var result = {
+          isMatch: bestLocation >= 0,
+          // Count exact matches (those with a score of 0) to be "almost" exact
+          score: !finalScore ? 0.001 : finalScore
+        };
+
+        if (includeMatches) {
+          result.matchedIndices = matchedIndices(matchMask, minMatchCharLength);
+        }
+
+        return result;
+      };
+      /***/
+
+    },
+    /* 4 */
+
+    /***/
+    function (module, exports) {
+      module.exports = function (pattern, _ref) {
+        var _ref$errors = _ref.errors,
+            errors = _ref$errors === void 0 ? 0 : _ref$errors,
+            _ref$currentLocation = _ref.currentLocation,
+            currentLocation = _ref$currentLocation === void 0 ? 0 : _ref$currentLocation,
+            _ref$expectedLocation = _ref.expectedLocation,
+            expectedLocation = _ref$expectedLocation === void 0 ? 0 : _ref$expectedLocation,
+            _ref$distance = _ref.distance,
+            distance = _ref$distance === void 0 ? 100 : _ref$distance;
+        var accuracy = errors / pattern.length;
+        var proximity = Math.abs(expectedLocation - currentLocation);
+
+        if (!distance) {
+          // Dodge divide by zero error.
+          return proximity ? 1.0 : accuracy;
+        }
+
+        return accuracy + proximity / distance;
+      };
+      /***/
+
+    },
+    /* 5 */
+
+    /***/
+    function (module, exports) {
+      module.exports = function () {
+        var matchmask = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+        var minMatchCharLength = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
+        var matchedIndices = [];
+        var start = -1;
+        var end = -1;
+        var i = 0;
+
+        for (var len = matchmask.length; i < len; i += 1) {
+          var match = matchmask[i];
+
+          if (match && start === -1) {
+            start = i;
+          } else if (!match && start !== -1) {
+            end = i - 1;
+
+            if (end - start + 1 >= minMatchCharLength) {
+              matchedIndices.push([start, end]);
+            }
+
+            start = -1;
+          }
+        } // (i-1 - start) + 1 => i - start
+
+
+        if (matchmask[i - 1] && i - start >= minMatchCharLength) {
+          matchedIndices.push([start, i - 1]);
+        }
+
+        return matchedIndices;
+      };
+      /***/
+
+    },
+    /* 6 */
+
+    /***/
+    function (module, exports) {
+      module.exports = function (pattern) {
+        var mask = {};
+        var len = pattern.length;
+
+        for (var i = 0; i < len; i += 1) {
+          mask[pattern.charAt(i)] = 0;
+        }
+
+        for (var _i = 0; _i < len; _i += 1) {
+          mask[pattern.charAt(_i)] |= 1 << len - _i - 1;
+        }
+
+        return mask;
+      };
+      /***/
+
+    },
+    /* 7 */
+
+    /***/
+    function (module, exports) {
+      // Machine word size
+      module.exports.MAX_BITS = 32;
+      /***/
+    },
+    /* 8 */
+
+    /***/
+    function (module, exports, __webpack_require__) {
+      function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+          throw new TypeError("Cannot call a class as a function");
+        }
+      }
+
+      function _defineProperties(target, props) {
+        for (var i = 0; i < props.length; i++) {
+          var descriptor = props[i];
+          descriptor.enumerable = descriptor.enumerable || false;
+          descriptor.configurable = true;
+          if ("value" in descriptor) descriptor.writable = true;
+          Object.defineProperty(target, descriptor.key, descriptor);
+        }
+      }
+
+      function _createClass(Constructor, protoProps, staticProps) {
+        if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+        if (staticProps) _defineProperties(Constructor, staticProps);
+        return Constructor;
+      }
+
+      var exactMatch = __webpack_require__(9);
+
+      var inverseExactMatch = __webpack_require__(10);
+
+      var prefixExactMatch = __webpack_require__(11);
+
+      var inversePrefixExactMatch = __webpack_require__(12);
+
+      var suffixExactMatch = __webpack_require__(13);
+
+      var inverseSuffixExactMatch = __webpack_require__(14);
+
+      var BitapSearch = __webpack_require__(2); // Return a 2D array representation of the query, for simpler parsing.
+      // Example:
+      // "^core go$ | rb$ | py$ xy$" => [["^core", "go$"], ["rb$"], ["py$", "xy$"]]
+
+
+      var queryfy = function queryfy(pattern) {
+        return pattern.split('|').map(function (item) {
+          return item.trim().split(/ +/g);
+        });
+      };
+      /**
+       * Command-like searching
+       * ======================
+       *
+       * Given multiple search terms delimited by spaces.e.g. `^jscript .python$ ruby !java`,
+       * search in a given text.
+       *
+       * Search syntax:
+       *
+       * | Token       | Match type                 | Description                            |
+       * | ----------- | -------------------------- | -------------------------------------- |
+       * | `jscript`   | fuzzy-match                | Items that match `jscript`             |
+       * | `'python`   | exact-match                | Items that include `python`            |
+       * | `!ruby`     | inverse-exact-match        | Items that do not include `ruby`       |
+       * | `^java`     | prefix-exact-match         | Items that start with `java`           |
+       * | `!^earlang` | inverse-prefix-exact-match | Items that do not start with `earlang` |
+       * | `.js$`      | suffix-exact-match         | Items that end with `.js`              |
+       * | `!.go$`     | inverse-suffix-exact-match | Items that do not end with `.go`       |
+       *
+       * A single pipe character acts as an OR operator. For example, the following
+       * query matches entries that start with `core` and end with either`go`, `rb`,
+       * or`py`.
+       *
+       * ```
+       * ^core go$ | rb$ | py$
+       * ```
+       */
+
+
+      var ExtendedSearch = /*#__PURE__*/function () {
+        function ExtendedSearch(pattern, options) {
+          _classCallCheck(this, ExtendedSearch);
+
+          var isCaseSensitive = options.isCaseSensitive;
+          this.options = options;
+          this.pattern = isCaseSensitive ? pattern : pattern.toLowerCase();
+          this.query = queryfy(this.pattern); // A <pattern>:<BitapSearch> key-value pair for optimizing searching
+
+          this._fuzzyCache = {};
+        }
+
+        _createClass(ExtendedSearch, [{
+          key: "searchIn",
+          value: function searchIn(value) {
+            var text = value.$;
+            var query = this.query;
+            text = this.options.isCaseSensitive ? text : text.toLowerCase();
+            var matchFound = false;
+
+            for (var i = 0, qLen = query.length; i < qLen; i += 1) {
+              var parts = query[i];
+              var result = null;
+              matchFound = true;
+
+              for (var j = 0, pLen = parts.length; j < pLen; j += 1) {
+                var token = parts[j];
+                result = this._search(token, text);
+
+                if (!result.isMatch) {
+                  // AND condition, short-circuit and move on to next part
+                  matchFound = false;
+                  break;
+                }
+              } // OR condition, so if TRUE, return
+
+
+              if (matchFound) {
+                return result;
+              }
+            } // Nothing was matched
+
+
+            return {
+              isMatch: false,
+              score: 1
+            };
+          }
+        }, {
+          key: "_search",
+          value: function _search(pattern, text) {
+            if (exactMatch.isForPattern(pattern)) {
+              return exactMatch.match(pattern, text);
+            } else if (prefixExactMatch.isForPattern(pattern)) {
+              return prefixExactMatch.match(pattern, text);
+            } else if (inversePrefixExactMatch.isForPattern(pattern)) {
+              return inversePrefixExactMatch.match(pattern, text);
+            } else if (inverseSuffixExactMatch.isForPattern(pattern)) {
+              return inverseSuffixExactMatch.match(pattern, text);
+            } else if (suffixExactMatch.isForPattern(pattern)) {
+              return suffixExactMatch.match(pattern, text);
+            } else if (inverseExactMatch.isForPattern(pattern)) {
+              return inverseExactMatch.match(pattern, text);
+            } else {
+              var searcher = this._fuzzyCache[pattern];
+
+              if (!searcher) {
+                searcher = new BitapSearch(pattern, this.options);
+                this._fuzzyCache[pattern] = searcher;
+              }
+
+              return searcher.search(text);
+            }
+          }
+        }]);
+
+        return ExtendedSearch;
+      }();
+
+      module.exports = ExtendedSearch;
+      /***/
+    },
+    /* 9 */
+
+    /***/
+    function (module, exports) {
+      // Token: 'file
+      // Match type: exact-match
+      // Description: Items that include `file`
+      var isForPattern = function isForPattern(pattern) {
+        return pattern.charAt(0) == "'";
+      };
+
+      var sanitize = function sanitize(pattern) {
+        return pattern.substr(1);
+      };
+
+      var match = function match(pattern, text) {
+        var sanitizedPattern = sanitize(pattern);
+        var index = text.indexOf(sanitizedPattern);
+        var isMatch = index > -1;
+        return {
+          isMatch: isMatch,
+          score: 0
+        };
+      };
+
+      module.exports = {
+        isForPattern: isForPattern,
+        sanitize: sanitize,
+        match: match
+      };
+      /***/
+    },
+    /* 10 */
+
+    /***/
+    function (module, exports) {
+      // Token: !fire
+      // Match type: inverse-exact-match
+      // Description: Items that do not include `fire`
+      var isForPattern = function isForPattern(pattern) {
+        return pattern.charAt(0) == '!';
+      };
+
+      var sanitize = function sanitize(pattern) {
+        return pattern.substr(1);
+      };
+
+      var match = function match(pattern, text) {
+        var sanitizedPattern = sanitize(pattern);
+        var isMatch = text.indexOf(sanitizedPattern) === -1;
+        return {
+          isMatch: isMatch,
+          score: 0
+        };
+      };
+
+      module.exports = {
+        isForPattern: isForPattern,
+        sanitize: sanitize,
+        match: match
+      };
+      /***/
+    },
+    /* 11 */
+
+    /***/
+    function (module, exports) {
+      // Token: ^file
+      // Match type: prefix-exact-match
+      // Description: Items that start with `file`
+      var isForPattern = function isForPattern(pattern) {
+        return pattern.charAt(0) == '^';
+      };
+
+      var sanitize = function sanitize(pattern) {
+        return pattern.substr(1);
+      };
+
+      var match = function match(pattern, text) {
+        var sanitizedPattern = sanitize(pattern);
+        var isMatch = text.startsWith(sanitizedPattern);
+        return {
+          isMatch: isMatch,
+          score: 0
+        };
+      };
+
+      module.exports = {
+        isForPattern: isForPattern,
+        sanitize: sanitize,
+        match: match
+      };
+      /***/
+    },
+    /* 12 */
+
+    /***/
+    function (module, exports) {
+      // Token: !^fire
+      // Match type: inverse-prefix-exact-match
+      // Description: Items that do not start with `fire`
+      var isForPattern = function isForPattern(pattern) {
+        return pattern.charAt(0) == '!' && pattern.charAt(1) == '^';
+      };
+
+      var sanitize = function sanitize(pattern) {
+        return pattern.substr(2);
+      };
+
+      var match = function match(pattern, text) {
+        var sanitizedPattern = sanitize(pattern);
+        var isMatch = !text.startsWith(sanitizedPattern);
+        return {
+          isMatch: isMatch,
+          score: 0
+        };
+      };
+
+      module.exports = {
+        isForPattern: isForPattern,
+        sanitize: sanitize,
+        match: match
+      };
+      /***/
+    },
+    /* 13 */
+
+    /***/
+    function (module, exports) {
+      // Token: .file$
+      // Match type: suffix-exact-match
+      // Description: Items that end with `.file`
+      var isForPattern = function isForPattern(pattern) {
+        return pattern.charAt(pattern.length - 1) == '$';
+      };
+
+      var sanitize = function sanitize(pattern) {
+        return pattern.substr(0, pattern.length - 1);
+      };
+
+      var match = function match(pattern, text) {
+        var sanitizedPattern = sanitize(pattern);
+        var isMatch = text.endsWith(sanitizedPattern);
+        return {
+          isMatch: isMatch,
+          score: 0
+        };
+      };
+
+      module.exports = {
+        isForPattern: isForPattern,
+        sanitize: sanitize,
+        match: match
+      };
+      /***/
+    },
+    /* 14 */
+
+    /***/
+    function (module, exports) {
+      // Token: !.file$
+      // Match type: inverse-suffix-exact-match
+      // Description: Items that do not end with `.file`
+      var isForPattern = function isForPattern(pattern) {
+        return pattern.charAt(0) == '!' && pattern.charAt(pattern.length - 1) == '$';
+      };
+
+      var sanitize = function sanitize(pattern) {
+        return pattern.substring(1, pattern.length - 1);
+      };
+
+      var match = function match(pattern, text) {
+        var sanitizedPattern = sanitize(pattern);
+        var isMatch = !text.endsWith(sanitizedPattern);
+        return {
+          isMatch: isMatch,
+          score: 0
+        };
+      };
+
+      module.exports = {
+        isForPattern: isForPattern,
+        sanitize: sanitize,
+        match: match
+      };
+      /***/
+    },
+    /* 15 */
+
+    /***/
+    function (module, exports, __webpack_require__) {
+      function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+          throw new TypeError("Cannot call a class as a function");
+        }
+      }
+
+      function _defineProperties(target, props) {
+        for (var i = 0; i < props.length; i++) {
+          var descriptor = props[i];
+          descriptor.enumerable = descriptor.enumerable || false;
+          descriptor.configurable = true;
+          if ("value" in descriptor) descriptor.writable = true;
+          Object.defineProperty(target, descriptor.key, descriptor);
+        }
+      }
+
+      function _createClass(Constructor, protoProps, staticProps) {
+        if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+        if (staticProps) _defineProperties(Constructor, staticProps);
+        return Constructor;
+      }
+
+      var ngram = __webpack_require__(16);
+
+      var _require = __webpack_require__(17),
+          jaccardDistance = _require.jaccardDistance;
+
+      var NGramSearch = /*#__PURE__*/function () {
+        function NGramSearch(pattern) {
+          _classCallCheck(this, NGramSearch); // Create the ngram, and sort it
+
+
+          this.patternNgram = ngram(pattern, {
+            sort: true
+          });
+        }
+
+        _createClass(NGramSearch, [{
+          key: "searchIn",
+          value: function searchIn(value) {
+            var textNgram = value.ng;
+
+            if (!textNgram) {
+              textNgram = ngram(value.$, {
+                sort: true
+              });
+              value.ng = textNgram;
+            }
+
+            var jacardResult = jaccardDistance(this.patternNgram, textNgram);
+            return {
+              score: jacardResult,
+              isMatch: jacardResult < 1
+            };
+          }
+        }]);
+
+        return NGramSearch;
+      }();
+
+      module.exports = NGramSearch;
+      /***/
+    },
+    /* 16 */
+
+    /***/
+    function (module, exports) {
+      var NGRAM_LEN = 3;
+
+      module.exports = function (text, _ref) {
+        var _ref$n = _ref.n,
+            n = _ref$n === void 0 ? NGRAM_LEN : _ref$n,
+            _ref$pad = _ref.pad,
+            pad = _ref$pad === void 0 ? true : _ref$pad,
+            _ref$sort = _ref.sort,
+            sort = _ref$sort === void 0 ? false : _ref$sort;
+        var nGrams = [];
+
+        if (text === null || text === undefined) {
+          return nGrams;
+        }
+
+        text = text.toLowerCase();
+
+        if (pad) {
+          text = " ".concat(text, " ");
+        }
+
+        var index = text.length - n + 1;
+
+        if (index < 1) {
+          return nGrams;
+        }
+
+        while (index--) {
+          nGrams[index] = text.substr(index, n);
+        }
+
+        if (sort) {
+          nGrams.sort(function (a, b) {
+            return a == b ? 0 : a < b ? -1 : 1;
+          });
+        }
+
+        return nGrams;
+      };
+      /***/
+
+    },
+    /* 17 */
+
+    /***/
+    function (module, exports, __webpack_require__) {
+      module.exports = {
+        jaccardDistance: __webpack_require__(18)
+      };
+      /***/
+    },
+    /* 18 */
+
+    /***/
+    function (module, exports, __webpack_require__) {
+      var _require = __webpack_require__(19),
+          union = _require.union,
+          intersection = _require.intersection;
+
+      module.exports = function (nGram1, nGram2) {
+        var nGramUnion = union(nGram1, nGram2);
+        var nGramIntersection = intersection(nGram1, nGram2);
+        return 1 - nGramIntersection.length / nGramUnion.length;
+      };
+      /***/
+
+    },
+    /* 19 */
+
+    /***/
+    function (module, exports, __webpack_require__) {
+      module.exports = {
+        union: __webpack_require__(20),
+        intersection: __webpack_require__(21)
+      };
+      /***/
+    },
+    /* 20 */
+
+    /***/
+    function (module, exports) {
+      // Assumes arrays are sorted
+      module.exports = function (arr1, arr2) {
+        var result = [];
+        var i = 0;
+        var j = 0;
+
+        while (i < arr1.length && j < arr2.length) {
+          var item1 = arr1[i];
+          var item2 = arr2[j];
+
+          if (item1 < item2) {
+            result.push(item1);
+            i += 1;
+          } else if (item2 < item1) {
+            result.push(item2);
+            j += 1;
+          } else {
+            result.push(item2);
+            i += 1;
+            j += 1;
+          }
+        }
+
+        while (i < arr1.length) {
+          result.push(arr1[i]);
+          i += 1;
+        }
+
+        while (j < arr2.length) {
+          result.push(arr2[j]);
+          j += 1;
+        }
+
+        return result;
+      };
+      /***/
+
+    },
+    /* 21 */
+
+    /***/
+    function (module, exports) {
+      // Assumes arrays are sorted
+      module.exports = function (arr1, arr2) {
+        var result = [];
+        var i = 0;
+        var j = 0;
+
+        while (i < arr1.length && j < arr2.length) {
+          var item1 = arr1[i];
+          var item2 = arr2[j];
+
+          if (item1 == item2) {
+            result.push(item1);
+            i += 1;
+            j += 1;
+          } else if (item1 < item2) {
+            i += 1;
+          } else if (item1 > item2) {
+            j += 1;
+          } else {
+            i += 1;
+            j += 1;
+          }
+        }
+
+        return result;
+      };
+      /***/
+
+    },
+    /* 22 */
+
+    /***/
+    function (module, exports) {
+      function _typeof(obj) {
+        "@babel/helpers - typeof";
+
+        if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+          _typeof = function _typeof(obj) {
+            return typeof obj;
+          };
+        } else {
+          _typeof = function _typeof(obj) {
+            return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+          };
+        }
+
+        return _typeof(obj);
+      }
+
+      var INFINITY = 1 / 0;
+
+      var isArray = function isArray(value) {
+        return !Array.isArray ? Object.prototype.toString.call(value) === '[object Array]' : Array.isArray(value);
+      }; // Adapted from:
+      // https://github.com/lodash/lodash/blob/f4ca396a796435422bd4fd41fadbd225edddf175/.internal/baseToString.js
+
+
+      var baseToString = function baseToString(value) {
+        // Exit early for strings to avoid a performance hit in some environments.
+        if (typeof value == 'string') {
+          return value;
+        }
+
+        var result = value + '';
+        return result == '0' && 1 / value == -INFINITY ? '-0' : result;
+      };
+
+      var toString = function toString(value) {
+        return value == null ? '' : baseToString(value);
+      };
+
+      var isString = function isString(value) {
+        return typeof value === 'string';
+      };
+
+      var isNumber = function isNumber(value) {
+        return typeof value === 'number';
+      };
+
+      var isObject = function isObject(value) {
+        return _typeof(value) === 'object';
+      };
+
+      var isDefined = function isDefined(value) {
+        return value !== undefined && value !== null;
+      };
+
+      module.exports = {
+        isDefined: isDefined,
+        isArray: isArray,
+        isString: isString,
+        isNumber: isNumber,
+        isObject: isObject,
+        toString: toString
+      };
+      /***/
+    },
+    /* 23 */
+
+    /***/
+    function (module, exports, __webpack_require__) {
+      var _require = __webpack_require__(22),
+          isDefined = _require.isDefined,
+          isString = _require.isString,
+          isNumber = _require.isNumber,
+          isArray = _require.isArray,
+          toString = _require.toString;
+
+      module.exports = function (obj, path) {
+        var list = [];
+        var arr = false;
+
+        var _get = function _get(obj, path) {
+          if (!path) {
+            // If there's no path left, we've gotten to the object we care about.
+            list.push(obj);
+          } else {
+            var dotIndex = path.indexOf('.');
+            var key = path;
+            var remaining = null;
+
+            if (dotIndex !== -1) {
+              key = path.slice(0, dotIndex);
+              remaining = path.slice(dotIndex + 1);
+            }
+
+            var value = obj[key];
+
+            if (isDefined(value)) {
+              if (!remaining && (isString(value) || isNumber(value))) {
+                list.push(toString(value));
+              } else if (isArray(value)) {
+                arr = true; // Search each item in the array.
+
+                for (var i = 0, len = value.length; i < len; i += 1) {
+                  _get(value[i], remaining);
+                }
+              } else if (remaining) {
+                // An object. Recurse further.
+                _get(value, remaining);
+              }
+            }
+          }
+        };
+
+        _get(obj, path);
+
+        if (arr) {
+          return list;
+        }
+
+        return list[0];
+      };
+      /***/
+
+    },
+    /* 24 */
+
+    /***/
+    function (module, exports, __webpack_require__) {
+      module.exports = {
+        createIndex: __webpack_require__(25),
+        KeyStore: __webpack_require__(26)
+      };
+      /***/
+    },
+    /* 25 */
+
+    /***/
+    function (module, exports, __webpack_require__) {
+      var _require = __webpack_require__(22),
+          isArray = _require.isArray,
+          isDefined = _require.isDefined,
+          isString = _require.isString;
+
+      var get = __webpack_require__(23);
+
+      var ngram = __webpack_require__(16);
+
+      module.exports = function (keys, list) {
+        var _ref = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
+            _ref$getFn = _ref.getFn,
+            getFn = _ref$getFn === void 0 ? get : _ref$getFn,
+            _ref$ngrams = _ref.ngrams,
+            ngrams = _ref$ngrams === void 0 ? false : _ref$ngrams;
+
+        var indexedList = []; // List is Array<String>
+
+        if (isString(list[0])) {
+          // Iterate over every string in the list
+          for (var i = 0, len = list.length; i < len; i += 1) {
+            var value = list[i];
+
+            if (isDefined(value)) {
+              // if (!isCaseSensitive) {
+              //   value = value.toLowerCase()
+              // }
+              var record = {
+                $: value,
+                idx: i
+              };
+
+              if (ngrams) {
+                record.ng = ngram(value, {
+                  sort: true
+                });
+              }
+
+              indexedList.push(record);
+            }
+          }
+        } else {
+          // List is Array<Object>
+          var keysLen = keys.length;
+
+          for (var _i = 0, _len = list.length; _i < _len; _i += 1) {
+            var item = list[_i];
+            var _record = {
+              idx: _i,
+              $: {}
+            }; // Iterate over every key (i.e, path), and fetch the value at that key
+
+            for (var j = 0; j < keysLen; j += 1) {
+              var key = keys[j];
+
+              var _value = getFn(item, key);
+
+              if (!isDefined(_value)) {
+                continue;
+              }
+
+              if (isArray(_value)) {
+                var subRecords = [];
+                var stack = [{
+                  arrayIndex: -1,
+                  value: _value
+                }];
+
+                while (stack.length) {
+                  var _stack$pop = stack.pop(),
+                      arrayIndex = _stack$pop.arrayIndex,
+                      _value2 = _stack$pop.value;
+
+                  if (!isDefined(_value2)) {
+                    continue;
+                  }
+
+                  if (isString(_value2)) {
+                    // if (!isCaseSensitive) {
+                    //   v = v.toLowerCase()
+                    // }
+                    var subRecord = {
+                      $: _value2,
+                      idx: arrayIndex
+                    };
+
+                    if (ngrams) {
+                      subRecord.ng = ngram(_value2, {
+                        sort: true
+                      });
+                    }
+
+                    subRecords.push(subRecord);
+                  } else if (isArray(_value2)) {
+                    for (var k = 0, arrLen = _value2.length; k < arrLen; k += 1) {
+                      stack.push({
+                        arrayIndex: k,
+                        value: _value2[k]
+                      });
+                    }
+                  }
+                }
+
+                _record.$[key] = subRecords;
+              } else {
+                // if (!isCaseSensitive) {
+                //   value = value.toLowerCase()
+                // }
+                var _subRecord = {
+                  $: _value
+                };
+
+                if (ngrams) {
+                  _subRecord.ng = ngram(_value, {
+                    sort: true
+                  });
+                }
+
+                _record.$[key] = _subRecord;
+              }
+            }
+
+            indexedList.push(_record);
+          }
+        }
+
+        return indexedList;
+      };
+      /***/
+
+    },
+    /* 26 */
+
+    /***/
+    function (module, exports, __webpack_require__) {
+      function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+          throw new TypeError("Cannot call a class as a function");
+        }
+      }
+
+      function _defineProperties(target, props) {
+        for (var i = 0; i < props.length; i++) {
+          var descriptor = props[i];
+          descriptor.enumerable = descriptor.enumerable || false;
+          descriptor.configurable = true;
+          if ("value" in descriptor) descriptor.writable = true;
+          Object.defineProperty(target, descriptor.key, descriptor);
+        }
+      }
+
+      function _createClass(Constructor, protoProps, staticProps) {
+        if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+        if (staticProps) _defineProperties(Constructor, staticProps);
+        return Constructor;
+      }
+
+      var _require = __webpack_require__(22),
+          isString = _require.isString;
+
+      var KeyStore = /*#__PURE__*/function () {
+        function KeyStore(keys) {
+          _classCallCheck(this, KeyStore);
+
+          this._keys = {};
+          this._keyNames = [];
+          this._length = keys.length;
+          this._hasWeights = false; // Iterate over every key
+
+          if (keys.length && isString(keys[0])) {
+            for (var i = 0; i < this._length; i += 1) {
+              var key = keys[i];
+              this._keys[key] = {
+                weight: 1
+              };
+
+              this._keyNames.push(key);
+            }
+          } else {
+            var keyWeightsTotal = 0;
+
+            for (var _i = 0; _i < this._length; _i += 1) {
+              var _key = keys[_i];
+
+              if (!_key.hasOwnProperty('name')) {
+                throw new Error('Missing "name" property in key object');
+              }
+
+              var keyName = _key.name;
+
+              this._keyNames.push(keyName);
+
+              if (!_key.hasOwnProperty('weight')) {
+                throw new Error('Missing "weight" property in key object');
+              }
+
+              var keyWeight = _key.weight;
+
+              if (keyWeight <= 0 || keyWeight >= 1) {
+                throw new Error('"weight" property in key must bein the range of (0, 1)');
+              }
+
+              this._keys[keyName] = {
+                weight: keyWeight
+              };
+              keyWeightsTotal += keyWeight;
+              this._hasWeights = true;
+            }
+
+            if (keyWeightsTotal > 1) {
+              throw new Error('Total of keyWeights cannot exceed 1');
+            }
+          }
+        }
+
+        _createClass(KeyStore, [{
+          key: "get",
+          value: function get(key, name) {
+            return this._keys[key] ? this._keys[key][name] : null;
+          }
+        }, {
+          key: "keys",
+          value: function keys() {
+            return this._keyNames;
+          }
+        }, {
+          key: "count",
+          value: function count() {
+            return this._length;
+          }
+        }, {
+          key: "toJSON",
+          value: function toJSON() {
+            return JSON.stringify(this._keys);
+          }
+        }]);
+
+        return KeyStore;
+      }();
+
+      module.exports = KeyStore;
+      /***/
+    },
+    /* 27 */
+
+    /***/
+    function (module, exports, __webpack_require__) {
+      module.exports = {
+        transformMatches: __webpack_require__(28),
+        transformScore: __webpack_require__(29)
+      };
+      /***/
+    },
+    /* 28 */
+
+    /***/
+    function (module, exports) {
+      module.exports = function (result, data) {
+        var matches = result.matches;
+        data.matches = [];
+
+        for (var i = 0, len = matches.length; i < len; i += 1) {
+          var match = matches[i];
+
+          if (match.indices.length === 0) {
+            continue;
           }
 
           var obj = {
-            indices: item.matchedIndices,
-            value: item.value
+            indices: match.indices,
+            value: match.value
+          };
+
+          if (match.key) {
+            obj.key = match.key;
           }
-          if (item.key) {
-            obj.key = item.key
+
+          if (match.idx > -1) {
+            obj.refIndex = match.idx;
           }
-          if ((typeof item.arrayIndex !== 'undefined') && item.arrayIndex > -1) {
-            obj.arrayIndex = item.arrayIndex
-          }
-          data.matches.push(obj)
+
+          data.matches.push(obj);
         }
-        
-        return data
-      })
+      };
+      /***/
+
+    },
+    /* 29 */
+
+    /***/
+    function (module, exports) {
+      module.exports = function (result, data) {
+        data.score = result.score;
+      };
+      /***/
+
     }
+    /******/
+    ])
+  );
+});
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(2)(module)))
 
-    if (this.options.includeScore) {
-      transformers.push(function(result, data) {
-        data.score = result.score
-        return data
-      })
-    }
+/***/ }),
+/* 2 */
+/***/ (function(module, exports) {
 
-    for (i = 0, len = results.length; i < len; i += 1) {
-      var result = results[i]
+module.exports = function(module) {
+	if (!module.webpackPolyfill) {
+		module.deprecate = function() {};
+		module.paths = [];
+		// module.parent = undefined by default
+		if (!module.children) module.children = [];
+		Object.defineProperty(module, "loaded", {
+			enumerable: true,
+			get: function() {
+				return module.l;
+			}
+		});
+		Object.defineProperty(module, "id", {
+			enumerable: true,
+			get: function() {
+				return module.i;
+			}
+		});
+		module.webpackPolyfill = 1;
+	}
+	return module;
+};
 
-      if (this.options.id) {
-        result.item = this.options.getFn(result.item, this.options.id)[0]
-      }
 
-      if (!transformers.length) {
-        finalOutput.push(result.item)
-        continue
-      }
-
-      var data = {
-        item: result.item
-      }
-
-      for (j = 0, jtlen = transformers.length; j < jtlen; j += 1) {
-        data = transformers[j](result, data)
-      }
-
-      finalOutput.push(data)
-    }
-
-    return finalOutput
-  }
-
-  this._search = function(searchers) {
-    searchers = (typeof searchers !== 'undefined') ? searchers : {}
-    var list = this.list
-    var resultMap = {}
-    var results = []
-    var analyzeResults = {}
-
-    // Check the first item in the list, if it's a string, then we assume
-    // that every item in the list is also a string, and thus it's a flattened array.
-    if (typeof list[0] === 'string') {
-      // Iterate over every item
-      for (var i = 0, len = list.length; i < len; i += 1) {
-        analyzeResults = this._analyze({
-          key: '',
-          value: list[i],
-          record: i,
-          index: i
-        }, {
-          resultMap: resultMap,
-          results: results,
-          tokenSearchers: searchers.tokenSearchers,
-          fullSearcher: searchers.fullSearcher
-        })
-        
-        resultMap = analyzeResults.resultMap
-        results = analyzeResults.results
-      }
-
-      return {
-        weights: null,
-        results: results
-      }
-    }
-
-    // Otherwise, the first item is an Object (hopefully), and thus the searching
-    // is done on the values of the keys of each item.
-    var weights = {}
-    for (i = 0, len = list.length; i < len; i += 1) {
-      var item = list[i]
-      // Iterate over every key
-      for (var j = 0, keysLen = this.options.keys.length; j < keysLen; j += 1) {
-        var key = this.options.keys[j]
-        if (typeof key !== 'string') {
-          weights[key.name] = {
-            weight: (1 - key.weight) || 1
-          }
-          if (key.weight <= 0 || key.weight > 1) {
-            throw new Error('Key weight has to be > 0 and <= 1')
-          }
-          key = key.name
-        } else {
-          weights[key] = {
-            weight: 1
-          }
-        }
-
-        analyzeResults = this._analyze({
-          key: key,
-          value: this.options.getFn(item, key),
-          record: item,
-          index: i
-        }, {
-          resultMap: resultMap,
-          results: results,
-          tokenSearchers: searchers.tokenSearchers,
-          fullSearcher: searchers.fullSearcher
-        })
-        
-        resultMap = analyzeResults.resultMap
-        results = analyzeResults.results
-      }
-    }
-
-    return {
-      weights: weights,
-      results: results
-    }
-  }
-
-  this.search = function(pattern, opts) {
-    this.opts = {}
-
-    if (typeof opts === 'undefined') {
-      this.opts.limit = false
-      this.opts.logOverride = null
-    } else {
-      this.opts.limit = (typeof opts.limit !== 'undefined') ? opts.limit : false
-      this.opts.logOverride = (typeof opts.logOverride !== 'undefined') ? opts.logOverride : null
-    }
-
-    this.oldLogLevel = this.options.verbose
-    if (typeof this.opts.logOverride === 'number') {
-      this.logger.setLevel(this.opts.logOverride)
-    }
-
-    this._log(PLAINFUSE_LOGGER_LEVEL_LOW, 'Search pattern: "' + pattern.toString() + '"')
-
-    var searchResults = this._search(this._prepare_searchers(pattern))
-
-    this._computeScore(searchResults.weights, searchResults.results)
-
-    if (this.options.shouldSort) {
-      this._sort(searchResults.results)
-    }
-
-    if (this.opts.limit && typeof this.opts.limit === 'number') {
-      searchResults.results = searchResults.results.slice(0, this.opts.limit)
-    }
-
-    if (typeof this.opts.logOverride === 'number') {
-      this.logger.setLevel(this.oldLogLevel)
-    }
-
-    return this._format(searchResults.results)
-  }
-
-}
-
-/* global indexurl, Mark, PlainFuse */
-
-// Based on code from https://gist.github.com/eddiewebb/735feb48f50f0ddd65ae5606a1cb41ae#gistcomment-2989041
-// Modified by Daniel F. Dickinson
-
-var summaryInclude = 300
-var fuseOptions = { // See plainfuse.js for details
-  shouldSort: true,
-  includeMatches: true,
-  includeAllMatches: true,
-  threshold: 0.3,  // default of 0.6 matches too much
-  tokenize: true,
-  keys: [{
-    name: 'title',
-    weight: 0.5
-  },
-  {
-    name: 'content',
-    weight: 0.8
-  },
-  {
-    name: 'tags',
-    weight: 0.4
-  },
-  {
-    name: 'categories',
-    weight: 0.4
-  }
-  ]
-}
-
-function doCloseSearch() { // eslint-disable-line no-unused-vars
-  if (document.getElementById('search-results')) {
-    document.getElementById('search-results').style = 'display: none; visibility: hidden;'
-    document.getElementById('search-results').innerHTML = '<h2>Search Results</h2>'
-  }
-}
-
-function doSearch() { // eslint-disable-line no-unused-vars
-  var searchQuery = document.search_form.s.value
-  if (searchQuery) {
-    if (document.getElementById('search-query')) {
-      document.getElementById('search-results').style = 'display: block; visibility: visible;'
-      executeSearch(searchQuery)
-    }
-  } else {
-    var para = document.createElement('P')
-    para.innerText = 'Please enter a word or phrase above'
-    if (document.getElementById('search-results')) {
-      document.getElementById('search-results').appendChild(para)
-      document.getElementById('search-results').style = 'display: block; visibility: visible;'
-    }
-  }
-  return false
-}
-
-function executeSearch(searchQuery) {
-  var request = new XMLHttpRequest()
-  request.open('GET', indexurl, true)
-  request.onload = function () {
-    if (request.status >= 200 && request.status < 400) {
-      var pages = JSON.parse(request.responseText)
-      var fuse = new PlainFuse(pages, fuseOptions)
-      var result = fuse.search(searchQuery)
-      if (result.length > 0) {
-        populateResults(result, searchQuery)
-      } else {
-        var para = document.createElement('p')
-        para.innerText = 'No matches found'
-        document.getElementById('search-results').appendChild(para)
-      }
-    } else {
-      console.log('OldNewMashup had error ' + request.status + ' on ' + indexurl)
-    }
-  }
-  request.onerror = function () {
-    console.log('OldNewMashup search connection error ' + request.status)
-  }
-  request.send()
-}
-
-function populateResults(result, searchQuery) {
-  result.forEach(function (value, key) {
-    var content = value.item.content
-    var snippet = ''
-    var snippetHighlights = []
-    if (fuseOptions.tokenize) {
-      snippetHighlights.push(searchQuery)
-    } else {
-      value.matches.forEach(function (mvalue, matchKey) { // eslint-disable-line no-unused-vars
-        if (mvalue.key == 'tags' || mvalue.key == 'categories') {
-          snippetHighlights.push(mvalue.value)
-        } else if (mvalue.key == 'content') {
-          var start = mvalue.indices[0][0] - summaryInclude > 0 ? mvalue.indices[0][0] - summaryInclude : 0
-          var end = mvalue.indices[0][1] + summaryInclude < content.length ? mvalue.indices[0][1] + summaryInclude : content.length
-          snippet += content.substring(start, end)
-          snippetHighlights.push(mvalue.value.substring(mvalue.indices[0][0], mvalue.indices[0][1] - mvalue.indices[0][0] + 1))
-        }
-      })
-    }
-
-    if (snippet.length < 1) {
-      snippet += content.substring(0, summaryInclude * 2)
-    }
-    var templateDefinition = '<div id=\'summary-${key}\'><h4><a href=\'${link}\'>${title}</a></h4><p>${snippet}</p>${ isset tags }<p>Tags: ${tags}</p>${ end }\n${ isset categories }<p>Categories: ${categories}</p>${ end }</div>'
-    //replace values
-    var output = render(templateDefinition, {
-      key: key,
-      title: value.item.title,
-      link: value.item.permalink,
-      tags: value.item.tags ? value.item.tags.join(', ') : '',
-      categories: value.item.categories ? value.item.categories.join(', ') : '',
-      snippet: snippet
-    })
-    document.getElementById('search-results').appendChild(htmlToElement(output))
-
-    snippetHighlights.forEach(function (snipvalue, snipkey) {  // eslint-disable-line no-unused-vars
-      new Mark(document.getElementById('summary-' + key)).mark(snipvalue)
-    })
-  })
-}
-
-function render(templateString, data) {
-  var conditionalMatches, conditionalPattern, copy
-  conditionalPattern = /\$\{\s*isset ([a-zA-Z]*) \s*\}(.*)\$\{\s*end\s*}/g
-  //since loop below depends on re.lastIndex, we use a copy to capture any manipulations whilst inside the loop
-  copy = templateString
-  while ((conditionalMatches = conditionalPattern.exec(templateString)) !== null) {
-    if (data[conditionalMatches[1]]) {
-      //valid key, remove conditionals, leave content.
-      copy = copy.replace(conditionalMatches[0], conditionalMatches[2])
-    } else {
-      //not valid, remove entire section
-      copy = copy.replace(conditionalMatches[0], '')
-    }
-  }
-  templateString = copy
-  //now any conditionals removed we can do simple substitution
-  var key, find, re
-  for (key in data) {
-    find = '\\$\\{\\s*' + key + '\\s*\\}'
-    re = new RegExp(find, 'g')
-    templateString = templateString.replace(re, data[key])
-  }
-  return templateString
-}
-
-/**
- * By Mark Amery: https://stackoverflow.com/a/35385518
- * @param {String} HTML representing a single element
- * @return {Element}
- */
-function htmlToElement(html) {
-  var template = document.createElement('template')
-  html = html.trim() // Never return a text node of whitespace as the result
-  template.innerHTML = html
-  return template.content.firstChild
-}
+/***/ })
+/******/ ]);
+});
+//# sourceMappingURL=sourcemaps/fusebar.js.map

@@ -1,15 +1,11 @@
 
 # Introduction
 
-fusebar is a dynamic search screen that uses PlainFuse (from
-plainfuse project) in the backend.  It is written in ES5 and has only
-the plainfuse dependency at runtime.
+Version 0.2.0
 
-The only build dependency is 'concat' and that is for a lack of other
-good (and simple) cross-platform options for combining files.
-
-For testing there are more dependencies because we use Jest tests (from
-upstream) to verify operation of `dist/fusebar.js`.
+fusebar is a private website search for browsers using Fuse.js
+(from krisk/Fuse on GitHub) in the backend. It's only runtime dependency
+is Fuse.js (and search data).
 
 ## Build Status
 
@@ -33,3 +29,8 @@ fusebar can be installed using NPM
 $ npm install fusebar
 ```
 
+## Development Server
+
+While developing one can ``npm run server`` and browse to
+<http://localhost:3000/> to do local testing / debugging of
+the search code.

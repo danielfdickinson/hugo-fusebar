@@ -1,22 +1,22 @@
 
-description = "fusebar is a Hugo Module"
+description = "Private website search for browsers using Fuse.js as backend"
 
 [module]
 
 [module.hugoVersion]
-  min = "0.65.3"
+  min = "0.66.0"
   extended = false
 
   [[module.mounts]]
     source = "."
     target = "assets/js/fusebar"
 
-  [[modules.imports]]
-    path = "github.com/cshoredaniel/plainfuse"
+  [[module.imports]]
+    path = "github.com/cshoredaniel/krisk-Fuse"
 
-  [[modules.imports.mounts]]
+  [[module.imports.mounts]]
     source = "."
-    target = "assets/js/plainfuse"
+    target = "assets/js/krisk-Fuse"
 
 [author]
   name = "Daniel F. Dickinson"

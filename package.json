@@ -5,8 +5,8 @@
     "email": "cshored@thecshore.com",
     "url": "https://www.thecshore.com"
   },
-  "version": "1.0.0",
-  "description": "Dynamic search screen using PlainFuse as backend",
+  "version": "0.2.0",
+  "description": "Private website search for browsers using Fuse.js as backend",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -17,29 +17,40 @@
     "fuzzy",
     "bitap",
     "search",
-    "standalone"
+    "browser",
+    "website",
+    "privacy-by-design"
   ],
   "main": "dist/fusebar.js",
   "scripts": {
-    "clean": "rimraf ./dist ./work",
-    "pretest": "npm run testbuild",
+    "clean": "rimraf ./dist",
+    "pretest": "npm run build",
     "test": "jest",
-    "prebuild": "npm run clean; npm run makedirs; npm run lint",
-    "pretestbuild": "npm run build",
-    "lint": "eslint --max-warnings 0 src",
-    "buildfusebar": "concat -o ./dist/fusebar.js ./node_modules/plainfuse/dist/plainfuse.js ./src/fusebar-main.js",
-    "testbuild": "concat -o ./work/fusebar.test.js ./dist/fusebar.js ./test/fusebar.test.js",
-    "build": "npm run buildfusebar",
-    "makedirs": "mkdir -p ./work ./dist"
+    "prelint": "npm run clean",
+    "prebuild": "npm run lint",
+    "predev": "npm run prebuild",
+    "lint": "eslint --max-warnings 0 src test",
+    "build": "webpack",
+    "dev": "concurrently -k \"webpack --progress --colors --watch\" \"browser-sync start --config bs-config.js\""
   },
   "devDependencies": {
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.8.7",
+    "@babel/preset-env": "^7.8.7",
+    "babel-loader": "^8.0.6",
+    "browser-sync": "^2.26.7",
     "concat": "^1.0.3",
+    "concurrently": "^5.1.0",
     "eslint": "^6.8.0",
     "handlebars": "^4.3.0",
     "jest": "^24.3.1",
+    "jsdom": "^16.2.1",
     "mixin-deep": "^1.3.2",
     "rimraf": "^2.6.3",
-    "set-value": "^2.0.1"
+    "set-value": "^2.0.1",
+    "terser-webpack-plugin": "^2.3.5",
+    "webpack": "^4.42.0",
+    "webpack-cli": "^3.3.11"
   },
   "engines": {
     "node": ">=10"
@@ -47,7 +58,5 @@
   "files": [
     "dist/"
   ],
-  "dependencies": {
-    "plainfuse": "^1.0.5"
-  }
+  "dependencies": {}
 }
