@@ -1,20 +1,14 @@
 
 # Introduction
 
-fusebar is a Private website search for browsers using Fuse.js
+fusebar is a private website search for browsers using Fuse.js
 (from krisk/Fuse on GitHub) in the backend. It's only runtime dependency
 is Fuse.js (and search data).
-
-The only build dependency is 'concat' and that is for a lack of other
-good (and simple) cross-platform options for combining files.
-
-For testing there are more dependencies because we use Jest tests (from
-upstream) to verify operation of `dist/fusebar.js`.
 
 ## Build Status
 
 See [fusebar
-STATUS](https://github.com/cshoredaniel/fusebar/blob/master/STATUS.md)
+STATUS](https://github.com/cshoredaniel/fusebar/blob/devel-1.0.0/STATUS.md)
 for the current build status.
 
 ## Installation

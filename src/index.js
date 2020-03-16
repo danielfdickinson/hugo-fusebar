@@ -1,4 +1,6 @@
-/* global indexurl Fuse */
+/* global indexurl module require */
+
+const Fuse = require('../_vendor/github.com/cshoredaniel/krisk-Fuse/dist/fuse.js')
 
 var summaryInclude = 1000
 var fuseOptions = { // See Fuse.js for details
@@ -234,3 +236,11 @@ function populateResults(results, searchQuery) { // eslint-disable-line no-unuse
   return true
 }
 
+module.exports = {
+  doCloseSearch,
+  doSearch,
+  executeSearch,
+  createMark,
+  markMatches,
+  populateResults
+}

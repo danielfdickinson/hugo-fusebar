@@ -1,2 +1,2 @@
-var Fuse = module.exports
+module.exports = require('../dist/fusebar')
 

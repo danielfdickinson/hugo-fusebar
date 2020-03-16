@@ -5,6 +5,9 @@
 // Requires vendored dist/fuse
 // Requires fixtures/index.json
 
+const Fuse = require('./prepare-fuse.js').Fuse
+const executeSearch = require('./prepare-fuse.js').executeSearch
+
 var documentBody = '<h1>Fusebar Search Test</h1>' +
 '<form name="search_form" onSubmit="return doSearch()">' +
 '  <input id="search-query" aria-label="Search box" type="search" name="s" size="20" /><input id="search-button" type="submit" value="Search" size="4" />' + 
@@ -736,18 +739,18 @@ var jsonData = [
   }
 ]
 
-var XMLHttpRequestObj
+let XMLHttpRequestObj
 
-var whendone = function () {
+let whendone = function () {
   return
 }
 
-var mockXHRsend = jest.fn().mockImplementation(function () {
+const mockXHRsend = jest.fn().mockImplementation(function () {
   XMLHttpRequestObj.onload()
   whendone()
 })
 
-var mockXHRopen = jest.fn().mockImplementation(function (method, uri, async) {
+const mockXHRopen = jest.fn().mockImplementation(function (method, uri, async) {
   return
 })
 
@@ -760,13 +763,16 @@ XMLHttpRequestObj = {
   responseText: JSON.stringify(jsonData)
 }
 
-var XMLHttpRequest = jest.fn().mockImplementation(function () {
+const XMLHttpRequest = jest.fn().mockImplementation(function () {
   return XMLHttpRequestObj
 })
 
-var indexurl = 'http://localhost:9000/index.json'
+global.XMLHttpRequest = XMLHttpRequest
 
-var fuseOptions = { // See Fuse.js for details
+let indexurl = 'http://localhost:9000/index.json'
+global.indexurl = indexurl
+
+let fuseOptions = { // See Fuse.js for details
   distance: 1000,
   findAllMatches: true,
   shouldSort: true,

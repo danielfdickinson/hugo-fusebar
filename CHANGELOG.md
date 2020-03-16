@@ -11,6 +11,8 @@
     added by this module
   - Use mocking and jsdom to do browser-like tests.
 - Tweak default search settings
+- Use webpack and babel instead of writing in ES5 and only using
+  concat.
 
 ## Version 0.1.2
 - Fix Hugo module configuration.
