@@ -164,7 +164,7 @@
             "documentation",
             "search"
         ],
-        "content": "Search Setup This implementation uses plainfuse, and mark.js (without jQuery)\nBased on information from https://gist.github.com/eddiewebb/735feb48f50f0ddd65ae5606a1cb41ae#gistcomment-2989041\nModified by Daniel F. Dickinson\nInitial setup Search depends on additional output content type of JSON in config.toml\n[outputs] home = [&#34;HTML&#34;, &#34;RSS&#34;, &#34;JSON&#34;] Searching additional fields To search additional fields defined in front matter, you must add it in 2 places.\n ",
+        "content": "Search Setup \nBased on information from https://gist.github.com/eddiewebb/735feb48f50f0ddd65ae5606a1cb41ae#gistcomment-2989041\nModified by Daniel F. Dickinson\nInitial setup Search depends on additional output content type of JSON in config.toml\n[outputs] home = [&#34;HTML&#34;, &#34;RSS&#34;, &#34;JSON&#34;] Searching additional fields To search additional fields defined in front matter, you must add it in 2 places.\n ",
         "permalink": "https://new-oldnew-mashup.com/docs/search/",
         "tags": [
             "theme",
@@ -298,55 +298,6 @@
             "website"
         ],
         "title": "Sitemap"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/categories/",
-        "tags": null,
-        "title": "Categories"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/licenses/cc-by-4.0/",
-        "tags": null,
-        "title": "CC-BY-4.0"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/licenses/",
-        "tags": null,
-        "title": "Licenses"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/tags/news/",
-        "tags": null,
-        "title": "news"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/categories/news/",
-        "tags": null,
-        "title": "news"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/tags/refactor/",
-        "tags": null,
-        "title": "refactor"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/categories/refactor/",
-        "tags": null,
-        "title": "refactor"
     },
     {
         "categories": [
@@ -492,90 +443,6 @@
     {
         "categories": null,
         "content": "",
-        "permalink": "https://new-oldnew-mashup.com/tags/website/",
-        "tags": null,
-        "title": "website"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/categories/website/",
-        "tags": null,
-        "title": "website"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/tags/listing/",
-        "tags": null,
-        "title": "listing"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/categories/listing/",
-        "tags": null,
-        "title": "listing"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/tags/pages/",
-        "tags": null,
-        "title": "pages"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/categories/pages/",
-        "tags": null,
-        "title": "pages"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/tags/recent/",
-        "tags": null,
-        "title": "recent"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/categories/recent/",
-        "tags": null,
-        "title": "recent"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/tags/documentation/",
-        "tags": null,
-        "title": "documentation"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/categories/documentation/",
-        "tags": null,
-        "title": "documentation"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/tags/search/",
-        "tags": null,
-        "title": "search"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/categories/search/",
-        "tags": null,
-        "title": "search"
-    },
-    {
-        "categories": null,
-        "content": "",
         "permalink": "https://new-oldnew-mashup.com/viverra-justo/mangi-dolores/quia-non-numquam/mauris/facto/",
         "tags": null,
         "title": "Facto"
@@ -586,166 +453,6 @@
         "permalink": "https://new-oldnew-mashup.com/viverra-justo/mangi-dolores/quia-non-numquam/mauris/",
         "tags": null,
         "title": "Mauris"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/tags/manual/",
-        "tags": null,
-        "title": "manual"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/tags/reference/",
-        "tags": null,
-        "title": "reference"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/categories/reference/",
-        "tags": null,
-        "title": "reference"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/tags/reference-guide/",
-        "tags": null,
-        "title": "reference-guide"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/tags/docs/",
-        "tags": null,
-        "title": "docs"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/tags/quick-start/",
-        "tags": null,
-        "title": "quick-start"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/categories/quick-start/",
-        "tags": null,
-        "title": "quick-start"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/categories/manual/",
-        "tags": null,
-        "title": "manual"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/tags/a11y/",
-        "tags": null,
-        "title": "a11y"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/tags/accessibility/",
-        "tags": null,
-        "title": "accessibility"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/categories/accessibility/",
-        "tags": null,
-        "title": "accessibility"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/tags/colour/",
-        "tags": null,
-        "title": "colour"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/tags/contrast/",
-        "tags": null,
-        "title": "contrast"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/tags/features/",
-        "tags": null,
-        "title": "features"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/tags/policy/",
-        "tags": null,
-        "title": "policy"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/categories/policy/",
-        "tags": null,
-        "title": "policy"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/tags/statement/",
-        "tags": null,
-        "title": "statement"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/tags/gdpr/",
-        "tags": null,
-        "title": "GDPR"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/categories/gdpr/",
-        "tags": null,
-        "title": "GDPR"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/tags/privacy/",
-        "tags": null,
-        "title": "privacy"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/categories/privacy/",
-        "tags": null,
-        "title": "privacy"
-    },
-    {
-        "categories": [
-            "licenses",
-            "legal"
-        ],
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/licenses/custom/",
-        "tags": [
-            "licenses",
-            "custom"
-        ],
-        "title": "Custom"
     },
     {
         "categories": null,
@@ -776,41 +483,6 @@
         "title": "Valutpat Consequat"
     },
     {
-        "categories": null,
-        "content": "Corporis Suscipit Generated by Lorem Ipsum Generator ",
-        "permalink": "https://new-oldnew-mashup.com/viverra-justo/corporis-suscipit/",
-        "tags": null,
-        "title": "Corporis Suscipit"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/licenses/expired/",
-        "tags": null,
-        "title": "Expired"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/categories/history/",
-        "tags": null,
-        "title": "history"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/categories/latin/",
-        "tags": null,
-        "title": "latin"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/categories/placeholder/",
-        "tags": null,
-        "title": "placeholder"
-    },
-    {
         "categories": [
             "latin",
             "placeholder",
@@ -827,41 +499,6 @@
         "permalink": "https://new-oldnew-mashup.com/viverra-justo/quis-nostrum/",
         "tags": null,
         "title": "Quis Nostrum"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/tags/demo/",
-        "tags": null,
-        "title": "demo"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/categories/demo/",
-        "tags": null,
-        "title": "demo"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/tags/dummy/",
-        "tags": null,
-        "title": "dummy"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/tags/lorem-ipsum/",
-        "tags": null,
-        "title": "lorem ipsum"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/tags/placeholder/",
-        "tags": null,
-        "title": "placeholder"
     },
     {
         "categories": [
@@ -966,34 +603,6 @@
     },
     {
         "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/categories/css/",
-        "tags": null,
-        "title": "css"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/categories/html/",
-        "tags": null,
-        "title": "html"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/categories/hugo/",
-        "tags": null,
-        "title": "hugo"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/categories/test/",
-        "tags": null,
-        "title": "test"
-    },
-    {
-        "categories": null,
         "content": "Empty frontmatter This page has an empty frontmatter section.\n",
         "permalink": "https://new-oldnew-mashup.com/ipsum/emptyfrontmatter/",
         "tags": null,
@@ -1005,125 +614,6 @@
         "permalink": "https://new-oldnew-mashup.com/ipsum/nofrontmatter/",
         "tags": null,
         "title": ""
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/tags/about/",
-        "tags": null,
-        "title": "about"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/categories/about/",
-        "tags": null,
-        "title": "about"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/tags/back-end/",
-        "tags": null,
-        "title": "back-end"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/categories/back-end/",
-        "tags": null,
-        "title": "back-end"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/tags/contact/",
-        "tags": null,
-        "title": "contact"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/categories/contact/",
-        "tags": null,
-        "title": "contact"
-    },
-    {
-        "categories": null,
-        "content": "Contact Success Your submission has been accepted. Your confirmation code is below.\nConfirmation Code:  Thank you for taking the time to contact the site operator.\n",
-        "permalink": "https://new-oldnew-mashup.com/siteentry/contactsuccess/",
-        "tags": null,
-        "title": "Contact Success Page"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/tags/description/",
-        "tags": null,
-        "title": "description"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/categories/description/",
-        "tags": null,
-        "title": "description"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/categories/form/",
-        "tags": null,
-        "title": "form"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/tags/image/",
-        "tags": null,
-        "title": "image"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/categories/image/",
-        "tags": null,
-        "title": "image"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/tags/introduction/",
-        "tags": null,
-        "title": "introduction"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/tags/logo/",
-        "tags": null,
-        "title": "logo"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/categories/logo/",
-        "tags": null,
-        "title": "logo"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/tags/navigation/",
-        "tags": null,
-        "title": "navigation"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/categories/navigation/",
-        "tags": null,
-        "title": "navigation"
     },
     {
         "categories": [
@@ -1160,20 +650,6 @@
         "title": "OldNew Mashup Homepage Description"
     },
     {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/tags/screenshot/",
-        "tags": null,
-        "title": "screenshot"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/categories/screenshot/",
-        "tags": null,
-        "title": "screenshot"
-    },
-    {
         "categories": [
             "description",
             "image",
@@ -1187,37 +663,6 @@
             "logo"
         ],
         "title": "Site Badge Description"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/tags/sitemap/",
-        "tags": null,
-        "title": "sitemap"
-    },
-    {
-        "categories": null,
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/categories/sitemap/",
-        "tags": null,
-        "title": "sitemap"
-    },
-    {
-        "categories": [
-            "image",
-            "description",
-            "listing",
-            "back-end"
-        ],
-        "content": "",
-        "permalink": "https://new-oldnew-mashup.com/siteentry/splash-images/",
-        "tags": [
-            "image",
-            "description",
-            "listing",
-            "back-end"
-        ],
-        "title": "Splash Images Resources"
     },
     {
         "categories": [
