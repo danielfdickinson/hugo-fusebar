@@ -57,29 +57,21 @@ function doSearch() { // eslint-disable-line no-unused-vars
   return false
 }
 
-function executeSearch(searchQuery, searchFuseOptions, rescb) {
+function executeSearch(searchQuery, searchFuseOptions) {
   var request = new XMLHttpRequest()
   request.open('GET', indexurl, true)
   request.onload = function () {
     if (request.status >= 200 && request.status < 400) {
-      var jsonprep = request.responseText.replace(/\n/mg, ' ')
+      var jsonprep = request.responseText.replace(/$/, ' ')
       var pages = JSON.parse(jsonprep)
       var fuse = new Fuse(pages, searchFuseOptions)
       var result = fuse.search(searchQuery)
       if (result.length > 0) {
-        if (typeof rescb === 'function') {
-          rescb(result, searchQuery)
-        } else {
-          populateResults(result, searchQuery)
-        }
+        populateResults(result, searchQuery)
       } else {
-        if (typeof rescb === 'function') {
-          rescb([], searchQuery)
-        } else {
-          var para = document.createElement('p')
-          para.innerText = 'No matches found'
-          document.getElementById('search-results').appendChild(para)
-        }
+        var para = document.createElement('p')
+        para.innerHTML = 'No matches found'
+        document.getElementById('search-results').appendChild(para)
       }
     } else {
       console.log('fusebar had error ' + request.status + ' on ' + indexurl)
