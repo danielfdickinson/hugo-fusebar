@@ -1,3 +1,12 @@
+# Version 5.0.2-beta
+
+- Added indexing for increased performance over large lists
+  - Added `Fuse.createIndex`, which created and returns an index. This function can be used to pre-generate the index, which you can then save, and ultimately pass to the `Fuse` instance.
+- **Breaking changes:**
+  - Removed `id` option
+  - Changed format of the search results
+  - Updated TypeScript definitions
+
 # Version 5.0.1-beta
 
 - Removed `matchAllTokens` option.

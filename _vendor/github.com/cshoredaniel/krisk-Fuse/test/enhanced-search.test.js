@@ -1,6 +1,6 @@
 const Fuse = require('./base')
 const books = require('./fixtures/books.json')
-const { get } = require('../src/utils')
+const { get } = require('../src/helpers/get')
 
 const verbose = false
 
@@ -57,19 +57,19 @@ describe('Searching using plugins', () => {
   test('Search: exact-match', () => {
     let result = fuse.search("'hello")
     expect(result.length).toBe(2)
-    expect(result[0].text).toBe('hello word')
+    expect(result[0].item.text).toBe('hello word')
   })
 
   test('Search: prefix-exact-match', () => {
     let result = fuse.search("^hello")
     expect(result.length).toBe(1)
-    expect(result[0].text).toBe('hello word')
+    expect(result[0].item.text).toBe('hello word')
   })
 
   test('Search: suffix-exact-match', () => {
     let result = fuse.search("fine$")
     expect(result.length).toBe(1)
-    expect(result[0].text).toBe('I am fine')
+    expect(result[0].item.text).toBe('I am fine')
   })
 
   test('Search: inverse-exact-match', () => {
