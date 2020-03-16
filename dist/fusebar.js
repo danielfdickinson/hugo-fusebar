@@ -2,11 +2,12 @@
 
 var summaryInclude = 1000
 var fuseOptions = { // See Fuse.js for details
+  distance: 1000,
   findAllMatches: true,
   shouldSort: true,
   includeMatches: true,
   minMatchCharLength: 1,
-  threshold: 0.3,  // default of 0.6 matches too much
+  threshold: 0.5,  // default of 0.6 matches too much
   tokenize: false,
   keys: [{
     name: 'title',
