@@ -1,6 +1,18 @@
 # fusebar Changelog
 
-## Version 1.1.1
+## Version 0.2.0
+- Update krisk-Fuse
+- Change krisk-Fuse to non-Hugo module (that is as non-native Hugo
+  module).
+- Remove taxonomy pages from index.json
+- Rework test framework
+  - Eliminate use of server — mock instead
+  - Don't worry about testing the underlying search, just test what's
+    added by this module
+  - Use mocking and jsdom to do browser-like tests.
+- Tweak default search settings
+
+## Version 0.1.2
 - Fix Hugo module configuration.
 - Switch back to krisk-Fuse from plainfuse.  Kiro Risk is doing lots of
   work and it doesn't make sense to duplicate that, now that we have
@@ -11,8 +23,8 @@
 - Add concurrently for using http-server and running tests using it.
 - Fix CI by adding working tests.
 
-## Version 1.1.0
+## Version 0.1.1
 - Switch to Fuse.js as the search backend
 
-## Version 1.0.0
+## Version 0.1.0
 - Initial version
