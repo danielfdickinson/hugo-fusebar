@@ -26,7 +26,7 @@ module.exports = {
     "watchOptions": {
         "ignoreInitial": true
     },
-    "server": ["test/fixtures","dist"],
+    "server": ["test/fixtures","dist", "_vendor/github.com/cshoredaniel/krisk-Fuse/dist"],
     "proxy": false,
     "port": 3000,
     "middleware": false,

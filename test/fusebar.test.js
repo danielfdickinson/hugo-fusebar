@@ -5,7 +5,9 @@
 // Requires vendored dist/fuse
 // Requires fixtures/index.json
 
-const executeSearch = require('./prepare-fuse.js').executeSearch
+const Fuse = require('./prepare-fuse')
+global.Fuse = Fuse
+const { executeSearch } = require('./prepare-fusebar')
 
 var documentBody = '<h1>Fusebar Search Test</h1>' +
 '<form name="search_form" onSubmit="return doSearch()">' +
