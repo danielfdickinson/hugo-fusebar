@@ -1,6 +1,4 @@
-/* global indexurl module require */
-
-const Fuse = require('../_vendor/github.com/cshoredaniel/krisk-Fuse/dist/fuse.js')
+/* global indexurl module Fuse */
 
 var summaryInclude = 1000
 var fuseOptions = { // See Fuse.js for details

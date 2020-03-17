@@ -7,7 +7,10 @@ module.exports = merge(common, {
   devtool: false,
   plugins: [
     new webpack.SourceMapDevToolPlugin({
-      filename: 'sourcemaps/[file].map'
+      filename: '[file].map'
     })
-  ]
+  ],
+  output: {
+    filename: `${LIBRARY_NAME}.raw.js`
+  }
 })

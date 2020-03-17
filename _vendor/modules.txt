@@ -1,1 +1,1 @@
-# github.com/cshoredaniel/krisk-Fuse v1.6.0
+# github.com/cshoredaniel/krisk-Fuse v1.6.1
