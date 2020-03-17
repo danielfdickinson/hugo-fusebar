@@ -33,7 +33,7 @@ const rawJS = {
   devtool: false,
   plugins: [
     new webpack.SourceMapDevToolPlugin({
-      filename: 'sourcemaps/[file].map'
+      filename: '[file].map'
     })
   ]
 }
