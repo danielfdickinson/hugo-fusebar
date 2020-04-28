@@ -5,7 +5,7 @@
     "email": "cshored@thecshore.com",
     "url": "https://www.thecshore.com"
   },
-  "version": "0.3.0",
+  "version": "0.2.2",
   "description": "Private website search for browsers using Fuse.js as backend",
   "license": "Apache-2.0",
   "repository": {
