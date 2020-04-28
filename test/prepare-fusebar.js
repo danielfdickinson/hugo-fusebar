@@ -9,7 +9,7 @@ if (process.env.TARGET === 'umd-dev') {
 } else if (process.env.TARGET === 'esm-dev') {
   module.exports = require('../dist/fusebar.esm.js')
 } else {
-  module.exports = require('../dist/fusebar.min.js')
+  module.exports = require('../dist/fusebar.js')
 }
 
 

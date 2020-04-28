@@ -8,5 +8,5 @@ if (process.env.TARGET === 'umd-dev') {
 } else if (process.env.TARGET === 'esm-dev') {
   module.exports = require('../_vendor/github.com/cshoredaniel/krisk-Fuse/dist/fuse.esm.js') // eslint-disable-line no-unused-vars
 } else {
-  module.exports = require('../_vendor/github.com/cshoredaniel/krisk-Fuse/dist/fuse.min.js') // eslint-disable-line no-unused-vars
+  module.exports = require('../_vendor/github.com/cshoredaniel/krisk-Fuse/dist/fuse.js') // eslint-disable-line no-unused-vars
 }
