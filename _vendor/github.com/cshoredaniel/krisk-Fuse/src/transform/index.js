@@ -1,4 +1,4 @@
-module.exports = {
-  transformMatches: require('./transform-matches'),
-  transformScore: require('./transform-score')
-}
+import transformMatches from './transformMatches'
+import transformScore from './transformScore'
+
+export { transformMatches, transformScore }

@@ -4,3 +4,5 @@ github.com/cshoredaniel/krisk-Fuse v1.6.0 h1:s0y37Ak/3z1nKp9eO6f46GQvDR9hXWsgiqQ
 github.com/cshoredaniel/krisk-Fuse v1.6.0/go.mod h1:434Ez74tgfxcK9MT4rtvYSEvM26lvKJ4ofJozK5kZtc=
 github.com/cshoredaniel/krisk-Fuse v1.6.1 h1:GV7V4k05+GzqmvwZhre1SbKoyVbG4dp+OtDSliWJMTE=
 github.com/cshoredaniel/krisk-Fuse v1.6.1/go.mod h1:434Ez74tgfxcK9MT4rtvYSEvM26lvKJ4ofJozK5kZtc=
+github.com/cshoredaniel/krisk-Fuse v5.2.3+incompatible h1:wZ0jj3gcaBNRSAzhEKzFG0oUWMYy6TGSnw+SNlHi1hQ=
+github.com/cshoredaniel/krisk-Fuse v5.2.3+incompatible/go.mod h1:434Ez74tgfxcK9MT4rtvYSEvM26lvKJ4ofJozK5kZtc=

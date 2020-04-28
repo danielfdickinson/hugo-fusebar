@@ -1,4 +1,4 @@
-module.exports = {
-  createIndex: require('./create-index'),
-  KeyStore: require('./key-store')
-}
+import createIndex from './createIndex'
+import KeyStore from './KeyStore'
+
+export { createIndex, KeyStore }
