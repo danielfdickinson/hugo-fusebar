@@ -2,10 +2,14 @@
 
 const process = require('process')
 
-if (process.env.MODE === 'dev') {
-  module.exports = require('../dist/fusebar.dev')
+if (process.env.TARGET === 'umd-dev') {
+  module.exports = require('../dist/fusebar.js')
+} else if (process.env.TARGET == 'commonjs') {
+  module.exports = require('../dist/fusebar.common.js')
+} else if (process.env.TARGET === 'esm-dev') {
+  module.exports = require('../dist/fusebar.esm.js')
 } else {
-  module.exports = require('../dist/fusebar')
+  module.exports = require('../dist/fusebar.js')
 }
 
 

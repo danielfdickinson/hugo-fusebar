@@ -1,11 +1,46 @@
+# Version 5.2.0
+
+- Addresses #390, #376, #382, #385
+- Removed ngram search and extended bitap to search long patterns
+
+# Version 5.0.9-beta
+
+- Fixed Fuse global name. Erroenously set as 'Fuse.js'
+
+# Version 5.0.8-beta
+
+- Changed bundler to Rollup.
+- Added ES6 modules for bundlers and browsers (`fuse.esm.js`) (fixed #262)
+- Added CommonJS builds (`fuse.common.js`)
+
+## Breaking Changes
+
+- The minimified version is finally actually called `fuse.min.js`
+
+# Version 5.0.7-beta
+
+- Fixed (#363)
+
+# Version 5.0.6-beta
+
+- Fixed (#357)
+
+# Version 5.0.3-beta
+
+- A couple of fixes, courtesy of [Daniel Dickinson](https://github.com/cshoredaniel):
+  - Generate multiple targets with webpack (#359)
+  - Fixed TypeError (#360)
+
 # Version 5.0.2-beta
 
 - Added indexing for increased performance over large lists
   - Added `Fuse.createIndex`, which created and returns an index. This function can be used to pre-generate the index, which you can then save, and ultimately pass to the `Fuse` instance.
-- **Breaking changes:**
-  - Removed `id` option
-  - Changed format of the search results
-  - Updated TypeScript definitions
+
+## Breaking Changes
+
+- Removed `id` option
+- Changed format of the search results
+- Updated TypeScript definitions
 
 # Version 5.0.1-beta
 

@@ -31,6 +31,9 @@ $ npm install fusebar
 
 ## Development Server
 
-While developing one can ``npm run server`` and browse to
+While developing one can ``yarn run dev`` and browse to
 <http://localhost:3000/> to do local testing / debugging of
 the search code.
+
+In development mode changes to the source are automatically webpacked
+and injected into the browser(s).
