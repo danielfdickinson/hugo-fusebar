@@ -93,16 +93,5 @@ module.exports = {
             "heartbeatTimeout": 5000
         }
     },
-    "tagNames": {
-        "less": "link",
-        "scss": "link",
-        "css": "link",
-        "jpg": "img",
-        "jpeg": "img",
-        "png": "img",
-        "svg": "img",
-        "gif": "img",
-        "js": "script"
-    },
     "injectNotification": false
 };

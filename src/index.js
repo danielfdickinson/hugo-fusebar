@@ -1,4 +1,4 @@
-/* global indexurl module Fuse */
+/* global indexurl Fuse */
 
 var summaryInclude = 1000
 var fuseOptions = { // See Fuse.js for details
@@ -234,7 +234,7 @@ function populateResults(results, searchQuery) { // eslint-disable-line no-unuse
   return true
 }
 
-module.exports = {
+export {
   doCloseSearch,
   doSearch,
   executeSearch,
