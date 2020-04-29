@@ -1,7 +1,7 @@
 
 # Introduction
 
-Version 0.2.0
+Version 0.2.2
 
 fusebar is a private website search for browsers using Fuse.js
 (from krisk/Fuse on GitHub) in the backend. It's only runtime dependency
@@ -29,7 +29,12 @@ fusebar can be installed using NPM
 $ npm install fusebar
 ```
 
-## Development Server
+## Developing / Building
+
+``jest`` and ``eslint`` are required to be in the user's PATH when
+developing or building fusebar.
+
+### Development Server
 
 While developing one can ``yarn run dev`` and browse to
 <http://localhost:3000/> to do local testing / debugging of
