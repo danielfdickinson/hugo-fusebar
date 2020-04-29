@@ -7,12 +7,13 @@
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 
-(function (factory) {
-  typeof define === 'function' && define.amd ? define(factory) :
-  factory();
-}((function () { 'use strict';
+(function (global, factory) {
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+  typeof define === 'function' && define.amd ? define(['exports'], factory) :
+  (global = global || self, factory(global.fusebar = {}));
+}(this, (function (exports) { 'use strict';
 
-  /* global indexurl module Fuse */
+  /* global indexurl Fuse */
   var summaryInclude = 1000;
   var fuseOptions = {
     // See Fuse.js for details
@@ -253,13 +254,14 @@
     return true;
   }
 
-  module.exports = {
-    doCloseSearch: doCloseSearch,
-    doSearch: doSearch,
-    executeSearch: executeSearch,
-    createMark: createMark,
-    markMatches: markMatches,
-    populateResults: populateResults
-  };
+  exports.createMark = createMark;
+  exports.doCloseSearch = doCloseSearch;
+  exports.doSearch = doSearch;
+  exports.executeSearch = executeSearch;
+  exports.markMatches = markMatches;
+  exports.populateResults = populateResults;
+
+  Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
+//# sourceMappingURL=fusebar.js.map

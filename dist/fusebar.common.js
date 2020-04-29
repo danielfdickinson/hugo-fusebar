@@ -9,7 +9,9 @@
 
 'use strict';
 
-/* global indexurl module Fuse */
+Object.defineProperty(exports, '__esModule', { value: true });
+
+/* global indexurl Fuse */
 var summaryInclude = 1000;
 var fuseOptions = {
   // See Fuse.js for details
@@ -250,11 +252,10 @@ function populateResults(results, searchQuery) {
   return true;
 }
 
-module.exports = {
-  doCloseSearch: doCloseSearch,
-  doSearch: doSearch,
-  executeSearch: executeSearch,
-  createMark: createMark,
-  markMatches: markMatches,
-  populateResults: populateResults
-};
+exports.createMark = createMark;
+exports.doCloseSearch = doCloseSearch;
+exports.doSearch = doSearch;
+exports.executeSearch = executeSearch;
+exports.markMatches = markMatches;
+exports.populateResults = populateResults;
+//# sourceMappingURL=fusebar.common.js.map
