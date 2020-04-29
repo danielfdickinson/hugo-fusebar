@@ -1,5 +1,5 @@
 /**
- * fusebar.js v0.2.2 - Private website search for browsers using Fuse.js as backend (https://www.thecshore.com/projects/fusebar)
+ * fusebar.js v0.2.4 - Private website search for browsers using Fuse.js as backend (https://www.thecshore.com/projects/fusebar)
  *
  * Copyright (c) 2020 Daniel F. Dickinson (https://www.thecshore.com)
  * All Rights Reserved. Apache Software License 2.0
@@ -9,29 +9,15 @@
 
 /* global indexurl Fuse */
 var summaryInclude = 1000;
-var fuseOptions = {
+var fuseKeyOptions = {
   // See Fuse.js for details
   distance: 1000,
   findAllMatches: true,
   shouldSort: true,
   includeMatches: true,
-  minMatchCharLength: 1,
-  threshold: 0.5,
-  // default of 0.6 matches too much
-  tokenize: false,
-  keys: [{
-    name: 'title',
-    weight: 0.3
-  }, {
-    name: 'content',
-    weight: 0.4
-  }, {
-    name: 'tags',
-    weight: 0.1
-  }, {
-    name: 'categories',
-    weight: 0.1
-  }]
+  minMatchCharLength: 2,
+  threshold: 0.3 // default of 0.6 matches too much
+
 };
 
 function doCloseSearch() {
@@ -50,9 +36,7 @@ function doSearch() {
     if (document.getElementById('search-query')) {
       document.getElementById('search-results').innerHTML = '<h2>Search Results</h2>';
       document.getElementById('search-results').style = 'display: block; visibility: visible;';
-      var searchFuseOptions = fuseOptions;
-      searchFuseOptions.minMatchCharLength = searchQuery.length * 0.8;
-      executeSearch(searchQuery, searchFuseOptions);
+      executeSearch(searchQuery);
     }
   } else {
     var para = document.createElement('p');
@@ -67,20 +51,60 @@ function doSearch() {
   return false;
 }
 
-function executeSearch(searchQuery, searchFuseOptions) {
+function executeSearch(searchQuery) {
+  var fuse;
+  var result;
   var request = new XMLHttpRequest();
   request.open('GET', indexurl, true);
 
   request.onload = function () {
     if (request.status >= 200 && request.status < 400) {
+      var haveResult = false;
       var jsonprep = request.responseText.replace(/$/, ' ');
       var pages = JSON.parse(jsonprep);
-      var fuse = new Fuse(pages, searchFuseOptions);
-      var result = fuse.search(searchQuery);
+      var searchFuseOptions = fuseKeyOptions;
+      searchFuseOptions.keys = [{
+        name: 'tags',
+        weight: 0.99
+      }];
+      searchFuseOptions.minMatchCharLength = Math.floor(searchQuery.length * 0.8);
+      fuse = new Fuse(pages, searchFuseOptions);
+      result = fuse.search(searchQuery);
 
       if (result.length > 0) {
-        populateResults(result);
-      } else {
+        populateKeyResults(result, searchQuery, 'Tags');
+        haveResult = true;
+      }
+
+      searchFuseOptions.keys = [{
+        name: 'categories',
+        weight: 0.99
+      }];
+      fuse = new Fuse(pages, searchFuseOptions);
+      result = fuse.search(searchQuery);
+
+      if (result.length > 0) {
+        populateKeyResults(result, searchQuery, 'Categories');
+        haveResult = true;
+      }
+
+      searchFuseOptions.keys = [{
+        name: 'title',
+        weight: 0.6
+      }, {
+        name: 'content',
+        weight: 0.4
+      }];
+      searchFuseOptions.distance = 10000;
+      fuse = new Fuse(pages, searchFuseOptions);
+      result = fuse.search(searchQuery);
+
+      if (result.length > 0) {
+        populateResults(result, searchQuery, 2);
+        haveResult = true;
+      }
+
+      if (!haveResult) {
         var para = document.createElement('p');
         para.innerHTML = 'No matches found';
         document.getElementById('search-results').appendChild(para);
@@ -95,6 +119,7 @@ function executeSearch(searchQuery, searchFuseOptions) {
   };
 
   request.send();
+  return false;
 }
 
 function createMark(value) {
@@ -142,20 +167,20 @@ function markMatches(matches) {
   return newResult;
 }
 
-function populateResults(results, searchQuery) {
+function populateResults(results, searchQuery, baseResNum) {
   // eslint-disable-line no-unused-vars
   results.forEach(function (result, resnum) {
     // eslint-disable-line no-unused-vars
     var resultElement = document.createElement('div');
     resultElement.setAttribute('class', 'search-result');
-    resultElement.id = 'search-result-' + resnum.toString();
+    resultElement.id = 'search-result-' + (resnum + baseResNum).toString();
 
     if (result.item.content && result.item.content.length > summaryInclude) {
       result.item.content = result.item.content.substring(0, summaryInclude);
     }
 
     var resultMap = markMatches(result.matches);
-    var resultKeys = ['Title', 'Content', 'Tags', 'Categories'];
+    var resultKeys = ['Title', 'Content'];
     resultKeys.forEach(function (key) {
       var lowerKey = key.toString().toLowerCase();
       var keyElement;
@@ -245,6 +270,60 @@ function populateResults(results, searchQuery) {
     });
     document.getElementById('search-results').appendChild(resultElement);
   });
+  return true;
+}
+
+function populateKeyResults(results, searchQuery, key, resnum) {
+  // eslint-disable-line no-unused-vars
+  var lowerKey = key.toString().toLowerCase();
+  var resultElement = document.createElement('div');
+  resultElement.setAttribute('class', 'search-result');
+  resultElement.id = 'search-result-0';
+  var keysElement = document.createElement('div');
+  keysElement.setAttribute('class', 'search-result-' + lowerKey);
+  keysElement.innerHTML = '<b>' + key + '</b>  (follow links for all matching pages): ';
+  var matchedKeys = {};
+  var firstVal = true;
+  results.forEach(function (result, resnum) {
+    // eslint-disable-line no-unused-vars
+    if (result.item.content && result.item.content.length > summaryInclude) {
+      result.item.content = result.item.content.substring(0, summaryInclude);
+    }
+
+    var resultMap = markMatches(result.matches);
+
+    if (typeof resultMap[lowerKey] !== 'undefined') {
+      /* marked */
+      var keyElVal;
+      result.matches.forEach(function (match) {
+        // eslint-disable-line no-unused-vars
+        var keyElement = null;
+
+        if (match.value == resultMap[lowerKey].original_value) {
+          if (!matchedKeys[match.value]) {
+            if (!firstVal) {
+              keysElement.appendChild(document.createTextNode(', '));
+            } else {
+              firstVal = false;
+            }
+
+            matchedKeys[match.value] = true;
+            keyElVal = document.createElement('span');
+            keyElVal.innerHTML = resultMap[lowerKey].element.innerHTML;
+            keyElement = document.createElement('a');
+            keyElement.setAttribute('href', '/' + encodeURIComponent(lowerKey) + '/' + encodeURIComponent(match.value) + '/');
+            keyElement.appendChild(keyElVal);
+          }
+        }
+
+        if (keyElement) {
+          keysElement.appendChild(keyElement);
+        }
+      });
+    }
+  });
+  resultElement.appendChild(keysElement);
+  document.getElementById('search-results').appendChild(resultElement);
   return true;
 }
 
