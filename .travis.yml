@@ -4,9 +4,6 @@ language: node_js
 node_js:
     - '10'
 
-before_install:
-    - npm install -g eslint jest
-
 git:
     depth: 10
 
