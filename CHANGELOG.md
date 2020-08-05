@@ -1,5 +1,32 @@
 # fusebar Changelog
 
+## Version 0.2.6
+
+- Add back eslint and jest as development dependencies
+- Move NOTE.txt into README and update README
+- Update lodash (development dependency), due to security
+  vulnerability
+- Update CHANGELOG for several versions
+
+## Version 0.2.5
+
+- Separate taxonomy search (tags/categories) from main search
+
+## Version 0.2.4
+
+- Fix Rollup bundling so it works properly
+
+## Version 0.2.3
+
+- Fix Hugo module vendoring
+
+## Version 0.2.2
+
+- Update Fuse.js version
+- Use Rollup instead of Webpack
+- Remove jest from development dependencies (it's only needed for CI)
+- Update README
+
 ## Version 0.2.1
 
 - Update krisk-Fuse
