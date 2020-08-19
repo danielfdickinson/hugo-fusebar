@@ -5,7 +5,7 @@
     "email": "cshored@thecshore.com",
     "url": "https://www.thecshore.com"
   },
-  "version": "0.2.7",
+  "version": "0.2.8",
   "description": "Private website search for browsers using Fuse.js as backend",
   "license": "Apache-2.0",
   "repository": {
@@ -38,7 +38,6 @@
     "dev:esm": "TARGET=esm-dev concurrently -k \"rollup -c --watch --environment TARGET=esm-dev\" \"browser-sync start --config bs-config.js\""
   },
   "devDependencies": {
-    "@babel/cli": "^7.8.4",
     "@babel/core": "^7.8.7",
     "@babel/plugin-proposal-object-rest-spread": "^7.9.5",
     "@babel/preset-env": "^7.8.7",
