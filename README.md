@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Version 0.2.6
+Version 0.2.8
 
 fusebar is a private website search for browsers using Fuse.js
 (from krisk/Fuse on GitHub) in the backend. It's only runtime dependency

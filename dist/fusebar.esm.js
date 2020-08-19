@@ -1,5 +1,5 @@
 /**
- * fusebar.js v0.2.4 - Private website search for browsers using Fuse.js as backend (https://www.thecshore.com/projects/fusebar)
+ * fusebar.js v0.2.8 - Private website search for browsers using Fuse.js as backend (https://www.thecshore.com/projects/fusebar)
  *
  * Copyright (c) 2020 Daniel F. Dickinson (https://www.thecshore.com)
  * All Rights Reserved. Apache Software License 2.0
