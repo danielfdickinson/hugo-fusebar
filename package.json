@@ -23,11 +23,11 @@
   ],
   "main": "dist/fusebar.js",
   "scripts": {
-    "clean": "rimraf ./dist",
+    "clean": "rimraf dist",
     "pretest": "npm run build",
     "test": "jest",
     "premakedir": "npm run clean",
-    "makedir": "mkdir ./dist",
+    "makedir": "mkdir dist",
     "prelint": "npm run makedir",
     "prebuild": "npm run lint",
     "predev": "npm run prebuild",
