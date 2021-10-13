@@ -1,5 +1,3 @@
-module github.com/cshoredaniel/fusebar
+module github.com/danielfdickinson/fusebar
 
 go 1.13
-
-require github.com/cshoredaniel/krisk-Fuse v5.2.3+incompatible // indirect

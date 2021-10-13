@@ -7,16 +7,16 @@ description = "Private website search for browsers using Fuse.js as backend"
   min = "0.66.0"
   extended = false
 
-  [[module.mounts]]
-    source = "."
-    target = "assets/js/fusebar"
+#  [[module.mounts]]
+#    source = "."
+#    target = "assets/js/fusebar"
+#
+#  [[module.imports]]
+#    path = "github.com/cshoredaniel/krisk-Fuse"
 
-  [[module.imports]]
-    path = "github.com/cshoredaniel/krisk-Fuse"
-
-  [[module.imports.mounts]]
-    source = "."
-    target = "assets/js/krisk-Fuse"
+#  [[module.imports.mounts]]
+#    source = "."
+#    target = "assets/js/krisk-Fuse"
 
 [author]
   name = "Daniel F. Dickinson"
